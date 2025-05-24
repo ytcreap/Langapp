@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <!-- Элементарный уровень -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <Button
+                android:id="@+id/btn_elementary"
+                style="?attr/materialButtonOutlinedStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Элементарный уровень"
+                app:icon="@drawable/ic_expand_more"
+                app:iconGravity="end" />
+
+            <GridLayout
+                android:id="@+id/grid_elementary"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:columnCount="5"
+                android:visibility="gone"
+                android:paddingTop="8dp">
+
+                <!-- Кнопки будут добавляться программно -->
+            </GridLayout>
+        </LinearLayout>
+
+        <!-- Базовый уровень -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:orientation="vertical">
+
+            <Button
+                android:id="@+id/btn_basic"
+                style="?attr/materialButtonOutlinedStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Базовый уровень"
+                app:icon="@drawable/ic_expand_more"
+                app:iconGravity="end" />
+
+            <GridLayout
+                android:id="@+id/grid_basic"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:columnCount="5"
+                android:visibility="gone"
+                android:paddingTop="8dp">
+            </GridLayout>
+        </LinearLayout>
+
+        <!-- Средний уровень -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:orientation="vertical">
+
+            <Button
+                android:id="@+id/btn_intermediate"
+                style="?attr/materialButtonOutlinedStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Средний уровень"
+                app:icon="@drawable/ic_expand_more"
+                app:iconGravity="end" />
+
+            <GridLayout
+                android:id="@+id/grid_intermediate"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:columnCount="5"
+                android:visibility="gone"
+                android:paddingTop="8dp">
+            </GridLayout>
+        </LinearLayout>
+    </LinearLayout>
+</ScrollView>

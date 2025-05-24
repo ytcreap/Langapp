@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mobile_navigation"
+    app:startDestination="@id/nav_log">
+
+
+    <fragment
+        android:id="@+id/nav_log"
+        android:name="com.example.langapp.LoginFragment"
+        android:label="Login"
+        tools:layout="@layout/fragment_login">
+        <action
+            android:id="@+id/action_login_to_home"
+            app:destination="@id/nav_home" />
+        <action
+            android:id="@+id/action_login_to_register"
+            app:destination="@id/registerFragment" />
+    </fragment>
+
+
+    <fragment
+        android:id="@+id/nav_home"
+        android:name="com.example.langapp.ui.home.HomeFragment"
+        android:label="@string/menu_home"
+        tools:layout="@layout/fragment_home">
+        <action
+            android:id="@+id/action_home_to_login"
+            app:destination="@id/nav_log" />
+    </fragment>
+
+
+    <fragment
+        android:id="@+id/nav_gallery"
+        android:name="com.example.langapp.ui.gallery.GalleryFragment"
+        android:label="@string/menu_gallery"
+        tools:layout="@layout/fragment_gallery" />
+
+
+    <fragment
+        android:id="@+id/nav_slideshow"
+        android:name="com.example.langapp.ui.slideshow.SlideshowFragment"
+        android:label="@string/menu_slideshow"
+        tools:layout="@layout/fragment_slideshow" />
+
+
+    <fragment
+        android:id="@+id/vocabularyFragment"
+        android:name="com.example.langapp.vocabulary.VocabularyFragment"
+        android:label="VocabularyFragment">
+        <argument
+            android:name="LEVEL_KEY"
+            app:argType="string" />
+        <argument
+            android:name="TASK_NUMBER_KEY"
+            app:argType="integer" />
+    </fragment>
+
+
+    <action
+        android:id="@+id/action_gallery_to_vocabulary"
+        app:destination="@id/vocabularyFragment">
+        <argument
+            android:name="LEVEL_KEY"
+            app:argType="string" />
+        <argument
+            android:name="TASK_NUMBER_KEY"
+            app:argType="integer" />
+    </action>
+
+
+    <argument
+        android:name="taskType"
+        app:argType="string"
+        android:defaultValue="vocabulary" />
+
+
+    <fragment
+        android:id="@+id/registerFragment"
+        android:name="com.example.langapp.RegisterFragment"
+        android:label="Register">
+        <action
+            android:id="@+id/action_register_to_home"
+            app:destination="@id/nav_home" />
+    </fragment>
+</navigation>

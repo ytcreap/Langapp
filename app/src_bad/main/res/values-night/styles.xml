@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Light theme -->
+    <style name="Theme.LangApp.Light" parent="Theme.MaterialComponents.Light">
+        <item name="colorPrimary">@color/purple_40</item>
+        <item name="colorSecondary">@color/purple_grey_40</item>
+        <item name="colorTertiary">@color/pink_40</item>
+    </style>
+
+    <!-- Dark theme -->
+    <style name="Theme.LangApp.Dark" parent="Theme.MaterialComponents">
+        <item name="colorPrimary">@color/purple_80</item>
+        <item name="colorSecondary">@color/purple_grey_80</item>
+        <item name="colorTertiary">@color/pink_80</item>
+    </style>
+
+
+</resources>

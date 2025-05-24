@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "936993351669",
+    "firebase_url": "https://languageguidev2-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "languageguidev2",
+    "storage_bucket": "languageguidev2.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:936993351669:android:740c00deb6f7e97a35a2bc",
+        "android_client_info": {
+          "package_name": "com.example.langapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "936993351669-snlm6p8nme5hkhgbkc7maqppdf13p6hq.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.langapp",
+            "certificate_hash": "9085abcd6ee9d5e97eab7154dfd3a27d4e337177"
+          }
+        },
+        {
+          "client_id": "936993351669-l0jpgmdcdj5m55gmkklm451mcuogod9e.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCCYDaPqaly0sH4jYLtZhEbQFOakPetNQ4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "936993351669-l0jpgmdcdj5m55gmkklm451mcuogod9e.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

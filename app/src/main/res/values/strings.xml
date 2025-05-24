@@ -1,0 +1,71 @@
+<resources>
+    <string name="app_name">Langapp</string>
+    <string name="default_web_client_id">936993351669-l0jpgmdcdj5m55gmkklm451mcuogod9e.apps.googleusercontent.com</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="nav_header_title">Android Studio</string>
+    <string name="nav_header_subtitle">android.studio@android.com</string>
+    <string name="nav_header_desc">Navigation header</string>
+    <string name="action_settings">Settings</string>
+
+    <string name="menu_home">Home</string>
+    <string name="menu_gallery">Gallery</string>
+    <string name="menu_slideshow">Slideshow</string>
+
+    <string name="profile_title">Профиль пользователя</string>
+    <string name="full_name_template">ФИО: Не указано</string>
+    <string name="group_template">Группа: Не указана</string>
+    <string name="progress_header">Прогресс выполнения:</string>
+    <string name="elementary_progress">Элементарный уровень: %d/15 заданий</string>
+    <string name="basic_progress">Базовый уровень: %d/15 заданий</string>
+    <string name="intermediate_progress">Средний уровень: %d/15 заданий</string>
+    <string name="elementary_level">Элементарный уровень</string>
+    <string name="basic_level">Базовый уровень</string>
+    <string name="intermediate_level">Средний уровень</string>
+    <string name="task_types">Лексика,Фонетика,Грамматика,Тексты,Тест</string>
+    <string name="task_format">%1$s (Задание %2$d.%3$d)</string>
+
+
+    <string-array name="russian_alphabet">
+        <item>А</item>
+        <item>Б</item>
+        <item>В</item>
+        <!-- Полный алфавит -->
+    </string-array>
+    <!-- Задания -->
+    <string name="task_instruction_vocabulary">Выберите правильные переводы слов:</string>
+    <string name="task_instruction_phonetics">Прослушайте и введите транскрипцию:</string>
+    <string name="listen_pronunciation">Прослушать произношение</string>
+    <string name="enter_transcription">Фонетическая транскрипция</string>
+    <string name="check_transcription">Проверить</string>
+    <string name="check_answers">Проверить ответы</string>
+
+    <!-- Цвета -->
+    <color name="success_background">#E8F5E9</color>
+    <color name="error_background">#FFEBEE</color>
+    <!-- В файле app/src/main/res/values/strings.xml -->
+    <string name="task_alphabet">Алфавит</string>
+    <string name="task_phonetics">Фонетика</string>
+    <string name="task_vocabulary">Лексика</string>
+
+    <string name="logout">Выйти из аккаунта</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="image_description" />
+    <string name="register">Register</string>
+    <string name="submit">Ответить</string>
+    <string name="vocabulary">Лексика</string>
+    <string name="phonetics">Фонетика</string>
+    <string name="grammar">Грамматика</string>
+    <string name="reading">Тексты</string>
+    <string name="test">Тест</string>
+    <string name="enter_answer">Введите ответ...</string>
+    <string name="show_hint">Показать подсказку</string>
+    <string name="submit_answer">Отправить ответ</string>
+    <string name="task_image">Изображение задания</string>
+    <string name="record">Записать</string>
+    <string name="play">Воспроизвести</string>
+    <string name="hide_hint">Скрыть подсказку</string>
+    <string name="attempts">Попыток: %d</string>
+
+</resources>
