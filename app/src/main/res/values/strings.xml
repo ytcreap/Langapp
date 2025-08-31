@@ -67,5 +67,7 @@
     <string name="play">Воспроизвести</string>
     <string name="hide_hint">Скрыть подсказку</string>
     <string name="attempts">Попыток: %d</string>
+    <string name="close">Закрыть</string>
+    <string name="fullscreen_image">Полноразмерное изображение</string>
 
 </resources>

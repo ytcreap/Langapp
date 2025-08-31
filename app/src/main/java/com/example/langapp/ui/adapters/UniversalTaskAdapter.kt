@@ -47,8 +47,8 @@ class UniversalTaskAdapter(
         val item = items[position]
         when (holder) {
             is MultipleChoiceHolder -> holder.bind(item as MultipleChoiceTask)
-            is ImageInputHolder -> holder.bind(item as ImageInputTask, onItemClick)
-            is TextInputHolder -> holder.bind(item as TextInputTask, onItemClick)
+            is ImageInputHolder -> holder.bind(item as ImageInputTask)
+            is TextInputHolder -> holder.bind(item as TextInputTask)
             is AudioInputHolder -> holder.bind(item as AudioInputTask, onItemClick)
             is ImageAudioHolder -> holder.bind(item as ImageAudioTask, onItemClick)
             is ImageRecordingHolder -> holder.bind(item as ImageRecordingTask, onItemClick)

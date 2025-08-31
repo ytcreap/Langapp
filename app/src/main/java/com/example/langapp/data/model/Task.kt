@@ -39,6 +39,7 @@ data class MultipleChoiceTask(
 // 2. Ввод по изображению
 @Parcelize
 data class ImageInputTask(
+    @get:PropertyName("question") val question: String,
     @get:PropertyName("name") override val taskname: String,
     @get:PropertyName("id") override val id: String,
     @get:PropertyName("image") val image: String,
@@ -54,7 +55,7 @@ data class ImageInputTask(
 data class TextInputTask(
     @get:PropertyName("name") override val taskname: String,
     @get:PropertyName("id") override val id: String,
-    @get:PropertyName("textPrompt") val textPrompt: String,
+    @get:PropertyName("question") val question: String,
     @get:PropertyName("correctAnswer") val correctAnswer: String,
     @get:PropertyName("audioSupport") val audioSupport: String? = null,
     val userAnswer: String? = null

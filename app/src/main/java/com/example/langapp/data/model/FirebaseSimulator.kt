@@ -37,6 +37,26 @@ object FirebaseSimulator {
 
 
                 ),
+                "grammar" to listOf(
+                    // текстовый ввод
+                    mapOf(
+                        "name" to "Задание 1",
+                        "id" to "ph1_3_wr",
+                        "type" to "TEXT_INPUT",
+                        "question" to "Что плавает в воде?",
+                        "correctAnswer" to "Рыба"
+                    ),
+
+                    mapOf(
+                        "name" to "Задание 2",
+                        "id" to "gr1_2_img",
+                        "type" to "IMAGE_INPUT",
+                        "question" to "Что это?",
+                        "image" to "img_chair",
+                        "correctAnswer" to "Стул",
+                        "hint" to "Предмет мебели для сидения"
+                    )
+                ),
 
                 "vocabulary" to listOf(
                     // Картинка + ввод текста
@@ -46,6 +66,7 @@ object FirebaseSimulator {
                         "type" to "IMAGE_INPUT",
                         "image" to "img_table",
                         "correctAnswer" to "стол",
+                        "question" to "Что изображено на рисунке?",
                         "hint" to "Предмет мебели с плоской поверхностью"
                     ),
 
@@ -82,6 +103,7 @@ object FirebaseSimulator {
                     "IMAGE_INPUT" -> ImageInputTask(
                         taskname = taskData["name"] as String,
                         id = taskData["id"] as String,
+                        question = taskData["question"] as String,
                         image = taskData["image"] as String,
                         correctAnswer = taskData["correctAnswer"] as String,
                         hint = taskData["hint"] as? String
@@ -90,7 +112,7 @@ object FirebaseSimulator {
                     "TEXT_INPUT" -> TextInputTask(
                         taskname = taskData["name"] as String,
                         id = taskData["id"] as String,
-                        textPrompt = taskData["textPrompt"] as String,
+                        question = taskData["question"] as String,
                         correctAnswer = taskData["correctAnswer"] as String,
                         audioSupport = taskData["audioSupport"] as? String
                     )

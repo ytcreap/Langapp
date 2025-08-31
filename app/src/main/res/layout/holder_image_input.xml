@@ -7,6 +7,15 @@
     android:orientation="vertical"
     android:padding="16dp">
 
+    <!-- Вопрос задания -->
+    <TextView
+        android:id="@+id/questionText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        tools:text="Что изображено на рисунке?" />
+
     <!-- Изображение задания -->
     <ImageView
         android:id="@+id/taskImage"
@@ -14,6 +23,8 @@
         android:layout_height="200dp"
         android:scaleType="centerCrop"
         android:contentDescription="@string/task_image"
+        android:layout_marginTop="8dp"
+        android:clickable="true"
         tools:src="@drawable/ic_image_placeholder" />
 
     <!-- Поле ввода с кнопками -->
@@ -58,5 +69,14 @@
         android:textColor="?attr/colorPrimary"
         android:textSize="14sp"
         tools:text="Пример подсказки" />
+
+    <!-- Текст результата (изначально скрыт) -->
+    <TextView
+        android:id="@+id/resultText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:visibility="gone"
+        android:textSize="16sp" />
 
 </LinearLayout>
