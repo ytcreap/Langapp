@@ -4,14 +4,17 @@ import android.os.Parcelable
 import com.google.firebase.database.PropertyName
 import kotlinx.android.parcel.Parcelize
 
+// класс заданий с id и type
 sealed class Task : Parcelable {
     abstract val id: String
     abstract val type: String
+    abstract val taskname: String
 }
 
 // Базовые модели для вопросов
 @Parcelize
 data class Question(
+    @get:PropertyName("name") val taskname: String,
     @get:PropertyName("question") val question: String,
     @get:PropertyName("options") val options: List<String> = emptyList(),
     @get:PropertyName("answer") val answer: String, // Может быть Int для индекса или String для текста
@@ -21,6 +24,7 @@ data class Question(
 // 1. Множественный выбор
 @Parcelize
 data class MultipleChoiceTask(
+    @get:PropertyName("name") override val taskname: String,
     @get:PropertyName("id") override val id: String,
     @get:PropertyName("question") val question: String,
     @get:PropertyName("options") val options: List<String>,
@@ -35,6 +39,7 @@ data class MultipleChoiceTask(
 // 2. Ввод по изображению
 @Parcelize
 data class ImageInputTask(
+    @get:PropertyName("name") override val taskname: String,
     @get:PropertyName("id") override val id: String,
     @get:PropertyName("image") val image: String,
     @get:PropertyName("correctAnswer") val correctAnswer: String,
@@ -47,6 +52,7 @@ data class ImageInputTask(
 // 3. Текстовый ввод
 @Parcelize
 data class TextInputTask(
+    @get:PropertyName("name") override val taskname: String,
     @get:PropertyName("id") override val id: String,
     @get:PropertyName("textPrompt") val textPrompt: String,
     @get:PropertyName("correctAnswer") val correctAnswer: String,
@@ -59,6 +65,7 @@ data class TextInputTask(
 // 4. Аудио ввод
 @Parcelize
 data class AudioInputTask(
+    @get:PropertyName("name") override val taskname: String,
     @get:PropertyName("id") override val id: String,
     @get:PropertyName("audioPrompt") val audioPrompt: String,
     @get:PropertyName("correctAnswer") val correctAnswer: String,
@@ -71,6 +78,7 @@ data class AudioInputTask(
 // 5. Изображение + аудио
 @Parcelize
 data class ImageAudioTask(
+    @get:PropertyName("name") override val taskname: String,
     @get:PropertyName("id") override val id: String,
     @get:PropertyName("image") val image: String,
     @get:PropertyName("audio") val audio: String,
@@ -82,6 +90,7 @@ data class ImageAudioTask(
 // 6. Изображение + запись
 @Parcelize
 data class ImageRecordingTask(
+    @get:PropertyName("name") override val taskname: String,
     @get:PropertyName("id") override val id: String,
     @get:PropertyName("image") val image: String,
     @get:PropertyName("targetText") val targetText: String,
@@ -94,6 +103,7 @@ data class ImageRecordingTask(
 // 7. Аудио + запись
 @Parcelize
 data class AudioRecordingTask(
+    @get:PropertyName("name") override val taskname: String,
     @get:PropertyName("id") override val id: String,
     @get:PropertyName("audioPrompt") val audioPrompt: String,
     @get:PropertyName("targetText") val targetText: String,
@@ -105,6 +115,7 @@ data class AudioRecordingTask(
 // 8. Текст + запись
 @Parcelize
 data class TextRecordingTask(
+    @get:PropertyName("name") override val taskname: String,
     @get:PropertyName("id") override val id: String,
     @get:PropertyName("text") val text: String,
     @get:PropertyName("referenceAudio") val referenceAudio: String,
@@ -117,6 +128,7 @@ data class TextRecordingTask(
 // 9. Теория
 @Parcelize
 data class TheoryTask(
+    @get:PropertyName("name") override val taskname: String,
     @get:PropertyName("id") override val id: String,
     @get:PropertyName("image") val image: String,
     @get:PropertyName("title") val title: String,
@@ -130,6 +142,7 @@ data class TheoryTask(
 @Deprecated("Use specific task types instead")
 @Parcelize
 data class PhoneticTask(
+    @get:PropertyName("name") override val taskname: String,
     @get:PropertyName("id") override val id: String,
     @get:PropertyName("word") val word: String,
     @get:PropertyName("ipa") val ipa: String,

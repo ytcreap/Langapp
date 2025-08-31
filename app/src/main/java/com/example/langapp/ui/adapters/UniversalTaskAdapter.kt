@@ -46,7 +46,7 @@ class UniversalTaskAdapter(
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val item = items[position]
         when (holder) {
-            is MultipleChoiceHolder -> holder.bind(item as MultipleChoiceTask, onItemClick)
+            is MultipleChoiceHolder -> holder.bind(item as MultipleChoiceTask)
             is ImageInputHolder -> holder.bind(item as ImageInputTask, onItemClick)
             is TextInputHolder -> holder.bind(item as TextInputTask, onItemClick)
             is AudioInputHolder -> holder.bind(item as AudioInputTask, onItemClick)

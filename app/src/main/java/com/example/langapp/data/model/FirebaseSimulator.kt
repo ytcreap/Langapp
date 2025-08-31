@@ -7,6 +7,7 @@ object FirebaseSimulator {
                 "phonetics" to listOf(
                     // Текст + запись (произношение слова)
                     mapOf(
+                        "name" to "Звук",
                         "id" to "ph1_1_rec",
                         "type" to "TEXT_RECORDING",
                         "text" to "Яблоко",
@@ -16,6 +17,7 @@ object FirebaseSimulator {
 
                     // Множественный выбор (выбор правильного звука)
                     mapOf(
+                        "name" to "Задание 1",
                         "id" to "ph1_2_mc",
                         "type" to "MULTIPLE_CHOICE",
                         "question" to "Выберите правильное произношение",
@@ -26,6 +28,7 @@ object FirebaseSimulator {
 
                     // Аудио + запись (повторение)
                     mapOf(
+                        "name" to "Задание 2",
                         "id" to "ph1_3_ar",
                         "type" to "AUDIO_RECORDING",
                         "referenceAudio" to "milk_pron",
@@ -38,6 +41,7 @@ object FirebaseSimulator {
                 "vocabulary" to listOf(
                     // Картинка + ввод текста
                     mapOf(
+                        "name" to "Теория 1",
                         "id" to "voc1_img_input",
                         "type" to "IMAGE_INPUT",
                         "image" to "img_table",
@@ -47,6 +51,7 @@ object FirebaseSimulator {
 
                     // Теория (объяснение слова)
                     mapOf(
+                        "name" to "Теория 2",
                         "id" to "voc1_theory",
                         "type" to "THEORY",
                         "image" to "img_chair",
@@ -65,6 +70,7 @@ object FirebaseSimulator {
             ?.map { taskData ->
                 when (taskData["type"] as String) {
                     "MULTIPLE_CHOICE" -> MultipleChoiceTask(
+                        taskname = taskData["name"] as String,
                         id = taskData["id"] as String,
                         question = taskData["question"] as String,
                         options = taskData["options"] as List<String>,
@@ -74,6 +80,7 @@ object FirebaseSimulator {
                     )
 
                     "IMAGE_INPUT" -> ImageInputTask(
+                        taskname = taskData["name"] as String,
                         id = taskData["id"] as String,
                         image = taskData["image"] as String,
                         correctAnswer = taskData["correctAnswer"] as String,
@@ -81,6 +88,7 @@ object FirebaseSimulator {
                     )
 
                     "TEXT_INPUT" -> TextInputTask(
+                        taskname = taskData["name"] as String,
                         id = taskData["id"] as String,
                         textPrompt = taskData["textPrompt"] as String,
                         correctAnswer = taskData["correctAnswer"] as String,
@@ -88,6 +96,7 @@ object FirebaseSimulator {
                     )
 
                     "AUDIO_INPUT" -> AudioInputTask(
+                        taskname = taskData["name"] as String,
                         id = taskData["id"] as String,
                         audioPrompt = taskData["audioPrompt"] as String,
                         correctAnswer = taskData["correctAnswer"] as String,
@@ -95,11 +104,13 @@ object FirebaseSimulator {
                     )
 
                     "IMAGE_AUDIO" -> ImageAudioTask(
+                        taskname = taskData["name"] as String,
                         id = taskData["id"] as String,
                         image = taskData["image"] as String,
                         audio = taskData["audio"] as String,
                         questions = (taskData["questions"] as? List<Map<String, Any>>)?.map { q ->
                             Question(
+                                taskname = taskData["name"] as String,
                                 question = q["question"] as String,
                                 options = q["options"] as? List<String> ?: emptyList(),
                                 answer = q["answer"] as String,
@@ -109,6 +120,7 @@ object FirebaseSimulator {
                     )
 
                     "IMAGE_RECORDING" -> ImageRecordingTask(
+                        taskname = taskData["name"] as String,
                         id = taskData["id"] as String,
                         image = taskData["image"] as String,
                         targetText = taskData["targetText"] as String,
@@ -117,6 +129,7 @@ object FirebaseSimulator {
                     )
 
                     "AUDIO_RECORDING" -> AudioRecordingTask(
+                        taskname = taskData["name"] as String,
                         id = taskData["id"] as String,
                         audioPrompt = taskData["audioPrompt"] as? String?: "",
                         targetText = taskData["targetText"] as? String?: "",
@@ -124,6 +137,7 @@ object FirebaseSimulator {
                     )
 
                     "TEXT_RECORDING" -> TextRecordingTask(
+                        taskname = taskData["name"] as String,
                         id = taskData["id"] as String,
                         text = taskData["text"] as String,
                         referenceAudio = taskData["referenceAudio"] as String,
@@ -132,12 +146,14 @@ object FirebaseSimulator {
                     )
 
                     "THEORY" -> TheoryTask(
+                        taskname = taskData["name"] as String,
                         id = taskData["id"] as String,
                         image = taskData["image"] as String,
                         title = taskData["title"] as? String ?: "",
                         text = taskData["text"] as? String ?: "",
                         interactiveElements = (taskData["interactiveElements"] as? List<Map<String, Any>>)?.map { q ->
                             Question(
+                                taskname = taskData["name"] as String,
                                 question = q["question"] as String,
                                 options = q["options"] as? List<String> ?: emptyList(),
                                 answer = q["answer"] as String,

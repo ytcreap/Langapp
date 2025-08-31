@@ -42,6 +42,7 @@ class VocabularyFragment : Fragment() {
         val lesson = args.getInt("TASK_NUMBER_KEY")
         val rawType = args.getString("TASK_TYPE_KEY") ?: ""
         val type = rawType.normalized()
+        val name = args.getString("TASK_NAME_KEY") ?: ""
 
         if (type.isEmpty()) {
             showErrorDialog()
@@ -57,7 +58,7 @@ class VocabularyFragment : Fragment() {
 
         when {
             tasks.isNotEmpty() -> {
-                setupViewPager(tasks, level, lesson, type) // Теперь передаем List<Task>
+                setupViewPager(tasks, level, lesson, type, name) // Теперь передаем List<Task>
                 setupHeader(level, lesson, type)
             }
 
@@ -76,7 +77,7 @@ class VocabularyFragment : Fragment() {
         }
     }
 
-    private fun setupViewPager(tasks: List<Task>, level: String, lesson: Int, type: String) {
+    private fun setupViewPager(tasks: List<Task>, level: String, lesson: Int, type: String, name: String) {
         if (tasks.isEmpty()) {
             binding.apply {
                 viewPager.visibility = View.GONE
@@ -91,7 +92,7 @@ class VocabularyFragment : Fragment() {
         binding.viewPager.adapter = pagerAdapter
 
         TabLayoutMediator(binding.tabLayout, binding.viewPager) { tab, position ->
-            tab.text = "Задание ${position + 1}"
+            tab.text = tasks[position].taskname  // Берем название из задания
         }.attach()
     }
 

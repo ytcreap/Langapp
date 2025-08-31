@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
@@ -12,18 +13,31 @@
         android:textSize="18sp"
         android:textStyle="bold"/>
 
-    <LinearLayout
+    <RadioGroup
         android:id="@+id/optionsContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
-        android:orientation="vertical"/>
+        android:layout_marginTop="16dp"
+        android:orientation="vertical">
 
-    <ImageButton
-        android:id="@+id/audioHintButton"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
+        <!-- Варианты будут добавляться динамически -->
+
+    </RadioGroup>
+
+    <Button
+        android:id="@+id/submitButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_gravity="end"
-        android:src="@drawable/ic_volume"
-        android:visibility="gone"/>
+        android:layout_marginTop="24dp"
+        android:text="Проверить"/>
+
+    <TextView
+        android:id="@+id/resultText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:visibility="gone"
+        android:textSize="16sp"/>
+
 </LinearLayout>

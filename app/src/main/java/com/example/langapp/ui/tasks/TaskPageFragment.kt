@@ -20,7 +20,8 @@ class TaskPageFragment : Fragment() {
             level: String,
             lesson: Int,
             type: String,
-            taskNumber: Int
+            taskNumber: Int,
+            taskName: String
         ): TaskPageFragment {
             return TaskPageFragment().apply {
                 arguments = Bundle().apply {
@@ -29,6 +30,7 @@ class TaskPageFragment : Fragment() {
                     putInt("LESSON", lesson)
                     putString("TYPE", type)
                     putInt("TASK_NUMBER", taskNumber)
+                    putString("TASK_NAME", taskName)
                 }
             }
         }
@@ -52,8 +54,9 @@ class TaskPageFragment : Fragment() {
         val lesson = arguments?.getInt("LESSON") ?: 0
         val type = arguments?.getString("TYPE") ?: ""
         val taskNumber = arguments?.getInt("TASK_NUMBER") ?: 1
+        val taskName = task.taskname
 
-        //binding.tvTaskInfo.text = "Уровень: $level\nУрок: $lesson\nТип: ${type.replaceFirstChar { it.uppercase() }}\nЗадание: $taskNumber"
+        binding.tvTaskInfo.text = "Уровень: $level\nУрок: $lesson\nТип: ${type.replaceFirstChar { it.uppercase() }}\nЗадание: $taskNumber\nНазвание: $taskName"
         val adapter = UniversalTaskAdapter(listOf(task)) { clickedTask ->
             // Обработка клика, если нужно
         }

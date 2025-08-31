@@ -10,18 +10,19 @@ class TaskPagerAdapter(
     private val tasks: List<Task>, // Список списков заданий (по 3 на каждый тип)
     private val level: String,
     private val lesson: Int,
-    private val type: String
+    private val type: String,
 ) : FragmentStateAdapter(fragment) {
 
     override fun getItemCount(): Int = tasks.size
 
     override fun createFragment(position: Int): Fragment {
+        val task = tasks[position]
         return TaskPageFragment.newInstance(
-            tasks[position],
+            task,
             level,
             lesson,
             type,
-            position + 1 // Номер задания (1, 2 или 3)
-        )
+            position + 1, // Номер задания (1, 2 или 3)
+            task.taskname) // Название задания тут надо
     }
 }

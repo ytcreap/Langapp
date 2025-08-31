@@ -13,6 +13,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.example.langapp.R
+import com.example.langapp.data.model.FirebaseSimulator
 import com.example.langapp.databinding.FragmentGalleryBinding
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
@@ -93,7 +94,7 @@ class GalleryFragment : Fragment() {
         )
 
         MaterialAlertDialogBuilder(requireContext())
-            .setTitle("$level: Задание $taskNumber")
+            .setTitle("Уровень: $level \nУрок: $taskNumber")
             .setItems(items) { _, which ->
                 val type = when (which) {
                     0 -> "vocabulary"
@@ -103,23 +104,34 @@ class GalleryFragment : Fragment() {
                     else -> "test"
                 }
                 // Универсальный переход для всех типов заданий
-                navigateToTask(level, taskNumber, type)
+                val taskname = getTaskName(level, taskNumber, type)
+                navigateToTask(level, taskNumber, type, taskname)
             }
             .setPositiveButton("Закрыть", null)
             .show()
     }
 
-    private fun navigateToTask(level: String, taskNumber: Int, taskType: String) {
+    private fun navigateToTask(level: String, taskNumber: Int, taskType: String, taskname: String) {
         val args = Bundle().apply {
             putString("LEVEL_KEY", level)
             putInt("TASK_NUMBER_KEY", taskNumber)
             putString("TASK_TYPE_KEY", taskType)
         }
         findNavController().navigate(
-            R.id.action_gallery_to_vocabulary, // или создайте новый action для других типов
+            R.id.action_gallery_to_vocabulary, // или создать новый action для других типов
             args
         )
     }
+
+    private fun getTaskName(level: String, taskNumber: Int, type: String): String {
+        val tasks = FirebaseSimulator.getTasks(level, lesson=1, type)
+        return if (tasks.size >= taskNumber && taskNumber > 0) {
+            tasks[taskNumber - 1].taskname
+        } else {
+            "Без названия"
+        }
+    }
+
 
     private fun openTaskContainer(lessonId: String) {
         findNavController().navigate(
