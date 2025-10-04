@@ -6,22 +6,23 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.GridLayout
-import android.widget.TextView
-import android.widget.Toast
-import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.example.langapp.R
-import com.example.langapp.data.model.FirebaseSimulator
 import com.example.langapp.databinding.FragmentGalleryBinding
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-
+import com.google.firebase.auth.FirebaseAuth
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
 class GalleryFragment : Fragment() {
 
     private var _binding: FragmentGalleryBinding? = null
     private val binding get() = _binding!!
+    private val viewModel: GalleryViewModel by viewModels() // Стандартный ViewModel без Hilt
+    private val auth = FirebaseAuth.getInstance()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -35,7 +36,11 @@ class GalleryFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Инициализация для всех уровней
+        setupLevels()
+        observeTasks()
+    }
+
+    private fun setupLevels() {
         setupLevel(
             button = binding.btnElementary,
             grid = binding.gridElementary,
@@ -56,7 +61,6 @@ class GalleryFragment : Fragment() {
     }
 
     private fun setupLevel(button: Button, grid: GridLayout, levelName: String) {
-        // Генерация кнопок заданий
         for (i in 1..15) {
             val taskButton = Button(context).apply {
                 text = i.toString()
@@ -72,7 +76,6 @@ class GalleryFragment : Fragment() {
             grid.addView(taskButton)
         }
 
-        // Обработчик клика по заголовку уровня
         button.setOnClickListener {
             val isExpanded = grid.visibility == View.VISIBLE
             grid.visibility = if (isExpanded) View.GONE else View.VISIBLE
@@ -103,46 +106,37 @@ class GalleryFragment : Fragment() {
                     3 -> "texts"
                     else -> "test"
                 }
-                // Универсальный переход для всех типов заданий
-                val taskname = getTaskName(level, taskNumber, type)
-                navigateToTask(level, taskNumber, type, taskname)
+                navigateToTask(level, taskNumber, type)
             }
             .setPositiveButton("Закрыть", null)
             .show()
     }
 
-    private fun navigateToTask(level: String, taskNumber: Int, taskType: String, taskname: String) {
+    private fun navigateToTask(level: String, taskNumber: Int, taskType: String) {
         val args = Bundle().apply {
             putString("LEVEL_KEY", level)
             putInt("TASK_NUMBER_KEY", taskNumber)
             putString("TASK_TYPE_KEY", taskType)
         }
+
+        viewModel.loadTasks(level, taskNumber, taskType)
+
         findNavController().navigate(
-            R.id.action_gallery_to_vocabulary, // или создать новый action для других типов
+            R.id.action_gallery_to_vocabulary,
             args
         )
     }
 
-    private fun getTaskName(level: String, taskNumber: Int, type: String): String {
-        val tasks = FirebaseSimulator.getTasks(level, lesson=1, type)
-        return if (tasks.size >= taskNumber && taskNumber > 0) {
-            tasks[taskNumber - 1].taskname
-        } else {
-            "Без названия"
+    private fun observeTasks() {
+        lifecycleScope.launch {
+            viewModel.tasks.collectLatest { tasks ->
+                // Логика обработки задач
+            }
         }
-    }
-
-
-    private fun openTaskContainer(lessonId: String) {
-        findNavController().navigate(
-            R.id.action_gallery_to_taskContainer,
-            bundleOf("lessonId" to lessonId)
-        )
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
-
     }
 }
