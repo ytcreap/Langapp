@@ -1,6 +1,7 @@
 package com.example.langapp.vocabulary
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -74,6 +75,7 @@ class VocabularyFragment : Fragment() {
                     binding.viewPager.visibility = View.GONE
                     binding.tabLayout.visibility = View.GONE
                     binding.tvEmptyState.visibility = View.GONE
+                    binding.cardEmptyState.visibility = View.GONE
                 }
             }
         }
@@ -84,12 +86,14 @@ class VocabularyFragment : Fragment() {
         binding.viewPager.adapter = pagerAdapter
 
         TabLayoutMediator(binding.tabLayout, binding.viewPager) { tab, position ->
-            tab.text = tasks[position].taskname
+            tab.text = "Задание ${position + 1}"
         }.attach()
 
         binding.viewPager.visibility = View.VISIBLE
         binding.tabLayout.visibility = View.VISIBLE
         binding.tvEmptyState.visibility = View.GONE
+        binding.cardEmptyState.visibility = View.GONE
+        binding.progressBar.visibility = View.GONE
     }
 
     private fun String.normalized(): String {
@@ -100,12 +104,14 @@ class VocabularyFragment : Fragment() {
             "texts", "тексты" -> "texts"
             "test", "тест", "quiz" -> "test"
             else -> {
+                Log.w("Normalize", "Unsupported type: '${this}'")
                 ""
             }
         }
     }
 
     private fun setupHeader(level: String, lesson: Int, type: String) {
+        // Устанавливаем заголовок
         binding.tvHeader.text = when (type) {
             "phonetics" -> "Фонетическое задание"
             "vocabulary" -> "Лексическое задание"
@@ -115,17 +121,19 @@ class VocabularyFragment : Fragment() {
             else -> "Задание"
         }
 
-        binding.tvLevel.text = "Уровень: $level"
-        binding.tvLesson.text = "Урок: $lesson"
-        binding.tvType.text = "Тип: ${type.replaceFirstChar { it.uppercase() }}"
+        // Устанавливаем информацию о задании
+        binding.tvLevel.text = level.uppercase()
+        binding.tvLesson.text = lesson.toString()
+        binding.tvType.text = type.replaceFirstChar { it.uppercase() }
     }
 
     private fun showEmptyState() {
         binding.apply {
             viewPager.visibility = View.GONE
             tabLayout.visibility = View.GONE
-            tvEmptyState.visibility = View.VISIBLE
+            cardEmptyState.visibility = View.VISIBLE
             tvEmptyState.text = "Задания для этого урока пока недоступны"
+            progressBar.visibility = View.GONE
         }
     }
 
@@ -135,6 +143,13 @@ class VocabularyFragment : Fragment() {
             .setMessage("Неподдерживаемый тип задания: ${arguments?.getString("TASK_TYPE_KEY")}")
             .setPositiveButton("OK") { _, _ -> findNavController().navigateUp() }
             .show()
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        arguments?.let {
+            outState.putAll(it)
+        }
     }
 
     override fun onDestroyView() {

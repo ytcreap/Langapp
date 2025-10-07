@@ -1,4 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-<selector xmlns:android="http://schemas.android.com/apk/res/android">
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="96dp"
+    android:height="96dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24"
+    android:tint="?attr/colorPrimary">
 
-</selector>
+    <!-- Красное яблоко -->
+    <path
+        android:fillColor="#FF5252"
+        android:pathData="M12,2C8,2 6,5 6,9c0,4 2,7 6,7s6,-3 6,-7C18,5 16,2 12,2z"/>
+
+    <!-- Зеленый листик -->
+    <path
+        android:fillColor="#4CAF50"
+        android:pathData="M13,1.5C13,1.5 14,2 14,3 14,4 13,4.5 12,4.5 11,4.5 10,4 10,3 10,2 11,1.5 12,1.5 12.5,1.5 13,1.5 13,1.5z"/>
+
+    <!-- Коричневый стебель -->
+    <path
+        android:fillColor="#795548"
+        android:pathData="M12,1L12.3,0.7 11.7,0.7z"/>
+
+</vector>

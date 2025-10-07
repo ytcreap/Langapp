@@ -1,13 +1,63 @@
-<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="purple_200">#FFBB86FC</color>
-    <color name="purple_500">#FF6200EE</color>
-    <color name="purple_700">#FF3700B3</color>
+    <color name="semi_transparent_gray">#669E9E9E</color>
+    <color name="purple_200">#673AB7</color>
+    <color name="purple_500">#48228C</color>
+    <color name="purple_700">#4B1FA9</color>
     <color name="teal_200">#FF03DAC5</color>
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
-
+    <color name="gray_300">#FFE0E0E0</color>
+    <color name="gray_500">#FF9E9E9E</color>
+    <color name="gray_600">#FF757575</color>
+    <color name="vocabulary_color">#FF6B6B</color>
+    <color name="phonetics_color">#4ECDC4</color>
+    <color name="grammar_color">#45B7D1</color>
+    <color name="texts_color">#F9A826</color>
+    <color name="test_color">#A363D9</color>
     <color name="correct_answer">#4CAF50</color>
     <color name="wrong_answer">#F44336</color>
+    <!--  Светлая тема  -->
+    <color name="light_primary">#DAB7E9</color>
+    <!--  Фиолетовый основной  -->
+    <color name="light_primary_variant">#B6AAED</color>
+    <!--  Фиолетовый темнее  -->
+    <color name="light_secondary">#FF80DEEA</color>
+    <!--  Нежно-голубой  -->
+    <color name="light_secondary_variant">#FF4DB6AC</color>
+    <!--  Бирюзовый  -->
+    <color name="light_background">#FFFFFFFF</color>
+    <!--  Белый фон  -->
+    <color name="light_surface">#FFF5F5F5</color>
+    <!--  Светло-серый для карточек  -->
+    <color name="light_on_primary">#FFFFFFFF</color>
+    <!--  Белый текст на фиолетовом  -->
+    <color name="light_on_secondary">#FF000000</color>
+    <!--  Черный текст на голубом  -->
+    <color name="light_on_background">#FF212121</color>
+    <!--  Темно-серый текст  -->
+    <color name="light_on_surface">#FF424242</color>
+    <!--  Серый текст  -->
+    <!--  Темная тема  -->
+    <color name="dark_primary">#8B5DDB</color>
+    <!--  Светло-фиолетовый  -->
+    <color name="dark_primary_variant">#6238A8</color>
+    <!--  Фиолетовый  -->
+    <color name="dark_secondary">#FF80CBC4</color>
+    <!--  Бирюзовый  -->
+    <color name="dark_secondary_variant">#FF4DB6AC</color>
+    <!--  Яркий бирюзовый  -->
+    <color name="dark_background">#404040</color>
+    <!--  Темно-серый фон  -->
+    <color name="dark_surface">#FF1E1E1E</color>
+    <!--  Серый для карточек  -->
+    <color name="dark_on_primary">#FF000000</color>
+    <!--  Черный текст на фиолетовом  -->
+    <color name="dark_on_secondary">#FF000000</color>
+    <!--  Черный текст на бирюзовом  -->
+    <color name="dark_on_background">#FFFFFFFF</color>
+    <!--  Белый текст  -->
+    <color name="dark_on_surface">#FFE0E0E0</color>
+    <!--  Светло-серый текст  -->
+
 </resources>

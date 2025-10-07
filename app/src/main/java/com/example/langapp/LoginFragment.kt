@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
+import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
@@ -34,8 +35,8 @@ class LoginFragment : Fragment() {
         val emailEditText: EditText = view.findViewById(R.id.et_email)
         val passwordEditText: EditText = view.findViewById(R.id.et_password)
         val loginButton: Button = view.findViewById(R.id.btn_login)
-        val googleSignInButton: Button =view.findViewById(R.id.btn_google_login)
-        val registerButton: Button = view.findViewById(R.id.btn_register)
+        val googleSignInButton: Button = view.findViewById(R.id.btn_google_login)
+        val registerButton: TextView = view.findViewById(R.id.btn_register)
 
         loginButton.setOnClickListener {
             val email = emailEditText.text.toString()
@@ -46,7 +47,6 @@ class LoginFragment : Fragment() {
         googleSignInButton.setOnClickListener {
             signInWithGoogle()
         }
-
 
         registerButton.setOnClickListener {
             // Переход на экран регистрации

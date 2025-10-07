@@ -5,13 +5,36 @@
     android:orientation="vertical"
     android:padding="16dp">
 
+    <!-- Вопрос -->
+    <TextView
+        android:id="@+id/questionText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:layout_marginBottom="16dp"/>
+
+    <!-- Подсказка текста -->
+    <TextView
+        android:id="@+id/textHint"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="16sp"
+        android:gravity="center"
+        android:layout_marginBottom="16dp"
+        android:visibility="gone"/>
+
+    <!-- Кнопка воспроизведения -->
     <ImageButton
         android:id="@+id/playButton"
         android:layout_width="64dp"
         android:layout_height="64dp"
         android:layout_gravity="center"
-        android:src="@drawable/ic_play"/>
+        android:src="@drawable/ic_play"
+        android:background="?attr/selectableItemBackgroundBorderless"/>
 
+    <!-- Счетчик попыток -->
     <TextView
         android:id="@+id/attemptsText"
         android:layout_width="match_parent"
@@ -20,10 +43,22 @@
         android:gravity="center"
         android:textSize="14sp"/>
 
+    <!-- Кнопка записи -->
     <Button
         android:id="@+id/recordButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:text="@string/record"/>
+
+    <!-- Индикатор записи -->
+    <TextView
+        android:id="@+id/recordingStatus"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:gravity="center"
+        android:textSize="14sp"
+        android:visibility="gone"/>
+
 </LinearLayout>

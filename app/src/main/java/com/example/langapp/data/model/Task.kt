@@ -106,8 +106,10 @@ data class ImageRecordingTask(
 data class AudioRecordingTask(
     @get:PropertyName("name") override val taskname: String,
     @get:PropertyName("id") override val id: String,
+    @get:PropertyName("question") val question: String, // Добавляем поле question
     @get:PropertyName("audioPrompt") val audioPrompt: String,
     @get:PropertyName("targetText") val targetText: String,
+    @get:PropertyName("textHint") val textHint: String? = null, // Добавляем textHint
     @get:PropertyName("maxAttempts") val maxAttempts: Int = 3
 ) : Task() {
     override val type: String = "AUDIO_RECORDING"

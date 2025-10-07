@@ -1,8 +1,12 @@
 package com.example.langapp
 
+import android.content.Context
 import android.os.Bundle
 import android.view.Menu
+import android.view.MenuItem
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.findNavController
@@ -24,12 +28,20 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private lateinit var auth: FirebaseAuth
 
+    companion object {
+        const val PREFS_NAME = "theme_prefs"
+        const val KEY_THEME = "app_theme"
+        const val THEME_LIGHT = 0
+        const val THEME_DARK = 1
+        const val THEME_SYSTEM = 2
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
+        // Устанавливаем тему перед super.onCreate()
+        applySavedTheme()
         super.onCreate(savedInstanceState)
 
-        // Инициализация FirebaseAuth
         auth = FirebaseAuth.getInstance()
-
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
@@ -56,10 +68,18 @@ class MainActivity : AppCompatActivity() {
                     true
                 }
                 else -> {
-                    // Делегируем обработку Navigation Component
-                    val handled = NavigationUI.onNavDestinationSelected(menuItem, navController)
-                    drawerLayout.closeDrawer(GravityCompat.START)
-                    handled
+                    // Проверяем авторизацию перед навигацией
+                    if (auth.currentUser != null) {
+                        // Делегируем обработку Navigation Component
+                        val handled = NavigationUI.onNavDestinationSelected(menuItem, navController)
+                        drawerLayout.closeDrawer(GravityCompat.START)
+                        handled
+                    } else {
+                        // Показываем сообщение о необходимости авторизации
+                        Snackbar.make(binding.root, "Для доступа необходимо войти в систему", Snackbar.LENGTH_SHORT).show()
+                        drawerLayout.closeDrawer(GravityCompat.START)
+                        false
+                    }
                 }
             }
         }
@@ -69,28 +89,20 @@ class MainActivity : AppCompatActivity() {
         super.onStart()
         val currentUser = auth.currentUser
         if (currentUser == null) {
-            // Пользователь не вошел в систему, переходите на экран входа
-            findNavController(R.id.nav_host_fragment_content_main).navigate(R.id.action_login_to_home)
+            // Пользователь не вошел в систему, переходим на экран входа
+            findNavController(R.id.nav_host_fragment_content_main).navigate(R.id.nav_log)
         }
     }
 
-    private fun signOut() {
+    public fun signOut() {
         // Выход из Firebase
-        val currentUser = auth.currentUser
-        if (currentUser == null) {
-            // Пользователь не вошел в систему, переходите на экран входа
-            findNavController(R.id.nav_host_fragment_content_main).navigate(R.id.action_home_to_login)
-        }
-        else {
-            auth.signOut()
+        auth.signOut()
 
-            // Если пользователь вошел через Google, выход из Google Sign-In
-            val googleSignInClient =
-                GoogleSignIn.getClient(this, GoogleSignInOptions.DEFAULT_SIGN_IN)
-            googleSignInClient.signOut().addOnCompleteListener {
-                // Переход на экран регистрации
-                findNavController(R.id.nav_host_fragment_content_main).navigate(R.id.action_home_to_login)
-            }
+        // Если пользователь вошел через Google, выход из Google Sign-In
+        val googleSignInClient = GoogleSignIn.getClient(this, GoogleSignInOptions.DEFAULT_SIGN_IN)
+        googleSignInClient.signOut().addOnCompleteListener {
+            // Переход на экран входа
+            findNavController(R.id.nav_host_fragment_content_main).navigate(R.id.nav_log)
         }
     }
 
@@ -99,8 +111,66 @@ class MainActivity : AppCompatActivity() {
         return true
     }
 
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.action_theme -> {
+                showThemeDialog()
+                true
+            }
+            R.id.action_settings -> {
+                // Проверяем авторизацию для доступа к настройкам
+                if (auth.currentUser != null) {
+                    Snackbar.make(binding.root, "Настройки", Snackbar.LENGTH_SHORT).show()
+                    true
+                } else {
+                    Snackbar.make(binding.root, "Для доступа к настройкам необходимо войти в систему", Snackbar.LENGTH_SHORT).show()
+                    false
+                }
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+
     override fun onSupportNavigateUp(): Boolean {
         val navController = findNavController(R.id.nav_host_fragment_content_main)
         return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
+    }
+
+    private fun showThemeDialog() {
+        val themes = arrayOf("Светлая тема", "Тёмная тема", "Системная тема")
+        val currentTheme = getSavedTheme()
+
+        AlertDialog.Builder(this)
+            .setTitle("Выберите тему")
+            .setSingleChoiceItems(themes, currentTheme) { dialog, which ->
+                saveTheme(which)
+                applyTheme(which)
+                dialog.dismiss()
+                recreate()
+            }
+            .setNegativeButton("Отмена", null)
+            .show()
+    }
+
+    private fun applySavedTheme() {
+        applyTheme(getSavedTheme())
+    }
+
+    private fun applyTheme(theme: Int) {
+        when (theme) {
+            THEME_LIGHT -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+            THEME_DARK -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+            THEME_SYSTEM -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
+        }
+    }
+
+    private fun getSavedTheme(): Int {
+        val prefs = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        return prefs.getInt(KEY_THEME, THEME_SYSTEM)
+    }
+
+    private fun saveTheme(theme: Int) {
+        val prefs = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        prefs.edit().putInt(KEY_THEME, theme).apply()
     }
 }

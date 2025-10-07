@@ -14,10 +14,10 @@ class HomeViewModel : ViewModel() {
 
     private fun loadMockData() {
         val mockUser = UserProfile(
-            fullName = "",
-            group = "",
+            fullName = "Алфёров Никита Дмитриевич",
+            group = "БПОи-22-04",
             elementaryProgress = 0,
-            basicProgress = 0,
+            basicProgress = 3,
             intermediateProgress = 0
         )
         _userData.value = mockUser

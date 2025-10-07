@@ -6,23 +6,21 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.GridLayout
+import android.widget.ImageView
+import android.widget.LinearLayout
+import android.widget.TextView
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.example.langapp.R
 import com.example.langapp.databinding.FragmentGalleryBinding
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.google.firebase.auth.FirebaseAuth
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.launch
+
 
 class GalleryFragment : Fragment() {
 
     private var _binding: FragmentGalleryBinding? = null
     private val binding get() = _binding!!
-    private val viewModel: GalleryViewModel by viewModels() // Стандартный ViewModel без Hilt
-    private val auth = FirebaseAuth.getInstance()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -36,11 +34,7 @@ class GalleryFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        setupLevels()
-        observeTasks()
-    }
-
-    private fun setupLevels() {
+        // Инициализация для всех уровней
         setupLevel(
             button = binding.btnElementary,
             grid = binding.gridElementary,
@@ -61,6 +55,7 @@ class GalleryFragment : Fragment() {
     }
 
     private fun setupLevel(button: Button, grid: GridLayout, levelName: String) {
+        // Генерация кнопок заданий
         for (i in 1..15) {
             val taskButton = Button(context).apply {
                 text = i.toString()
@@ -76,6 +71,7 @@ class GalleryFragment : Fragment() {
             grid.addView(taskButton)
         }
 
+        // Обработчик клика по заголовку уровня
         button.setOnClickListener {
             val isExpanded = grid.visibility == View.VISIBLE
             grid.visibility = if (isExpanded) View.GONE else View.VISIBLE
@@ -88,28 +84,56 @@ class GalleryFragment : Fragment() {
     }
 
     private fun showTaskDetails(level: String, taskNumber: Int) {
+        val levelDisplayName = when (level) {
+            "elementary" -> "Элементарный"
+            "basic" -> "Средний"
+            "intermediate" -> "Продвинутый"
+            else -> level
+        }
+
         val items = arrayOf(
-            "1. Лексика",
-            "2. Фонетика",
-            "3. Грамматика",
-            "4. Тексты",
-            "5. Тест"
+            "Лексика",
+            "Фонетика",
+            "Грамматика",
+            "Тексты",
+            "Тест"
         )
 
-        MaterialAlertDialogBuilder(requireContext())
-            .setTitle("Уровень: $level \nУрок: $taskNumber")
-            .setItems(items) { _, which ->
-                val type = when (which) {
+        // Создаем кастомный layout для диалога
+        val dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_task_selector, null)
+        val titleText = dialogView.findViewById<TextView>(R.id.dialog_title)
+        val container = dialogView.findViewById<LinearLayout>(R.id.tasks_container)
+
+        titleText.text = "$levelDisplayName • Урок $taskNumber"
+
+        // Создаем диалог и сохраняем ссылку
+        val dialog = MaterialAlertDialogBuilder(requireContext())
+            .setView(dialogView)
+            .create()
+
+        // Создаем кнопки для каждого типа задания
+        items.forEachIndexed { index, item ->
+            val button = LayoutInflater.from(requireContext()).inflate(R.layout.item_task, container, false)
+            val taskText = button.findViewById<TextView>(R.id.task_text)
+            taskText.text = item
+
+            button.setOnClickListener {
+                val type = when (index) {
                     0 -> "vocabulary"
                     1 -> "phonetics"
                     2 -> "grammar"
                     3 -> "texts"
                     else -> "test"
                 }
+                // Закрываем диалог перед навигацией
+                dialog.dismiss()
                 navigateToTask(level, taskNumber, type)
             }
-            .setPositiveButton("Закрыть", null)
-            .show()
+
+            container.addView(button)
+        }
+
+        dialog.show()
     }
 
     private fun navigateToTask(level: String, taskNumber: Int, taskType: String) {
@@ -118,25 +142,23 @@ class GalleryFragment : Fragment() {
             putInt("TASK_NUMBER_KEY", taskNumber)
             putString("TASK_TYPE_KEY", taskType)
         }
-
-        viewModel.loadTasks(level, taskNumber, taskType)
-
         findNavController().navigate(
             R.id.action_gallery_to_vocabulary,
             args
         )
     }
-
-    private fun observeTasks() {
-        lifecycleScope.launch {
-            viewModel.tasks.collectLatest { tasks ->
-                // Логика обработки задач
-            }
+    /*
+        private fun openTaskContainer(lessonId: String) {
+            findNavController().navigate(
+                R.id.action_gallery_to_taskContainer,
+                bundleOf("lessonId" to lessonId)
+            )
         }
-    }
+     */
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+
     }
 }

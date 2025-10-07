@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.langapp.data.model.AudioRecordingTask
 import com.example.langapp.data.model.Task
 import com.example.langapp.databinding.FragmentTaskPageBinding
 import com.example.langapp.ui.adapters.UniversalTaskAdapter
@@ -56,9 +57,19 @@ class TaskPageFragment : Fragment() {
         val taskNumber = arguments?.getInt("TASK_NUMBER") ?: 1
         val taskName = task.taskname
 
-        binding.tvTaskInfo.text = "Уровень: $level\nУрок: $lesson\nТип: ${type.replaceFirstChar { it.uppercase() }}\nЗадание: $taskNumber\nНазвание: $taskName"
+        //binding.tvTaskInfo.text = "Уровень: $level\nУрок: $lesson\nТип: ${type.replaceFirstChar { it.uppercase() }}\nЗадание: $taskNumber\nНазвание: $taskName"
         val adapter = UniversalTaskAdapter(listOf(task)) { clickedTask ->
             // Обработка клика, если нужно
+            when (clickedTask) {
+                is AudioRecordingTask -> {
+                    // Обработка записи аудио
+                    handleAudioRecording(clickedTask)
+                }
+                else -> {
+                    // Другие обработчики
+                }
+                // ... другие типы задач
+            }
         }
         binding.rvTasks.layoutManager = LinearLayoutManager(requireContext())
         binding.rvTasks.adapter = adapter
@@ -67,5 +78,10 @@ class TaskPageFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    private fun handleAudioRecording(task: AudioRecordingTask) {
+        // TODO: Реализовать обработку записанного аудио
+        // Проверка произношения, сохранение результата и т.д.
     }
 }

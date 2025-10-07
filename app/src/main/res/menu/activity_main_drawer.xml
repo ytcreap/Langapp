@@ -18,6 +18,6 @@
             android:title="Помощь" />
         <item
             android:id="@+id/nav_logout"
-            android:title="Выйти из аккаунта" />
+            android:title="Выйти" />
     </group>
 </menu>

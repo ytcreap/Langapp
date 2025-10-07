@@ -13,8 +13,8 @@
     <string name="menu_slideshow">Slideshow</string>
 
     <string name="profile_title">Профиль пользователя</string>
-    <string name="full_name_template">ФИО: Не указано</string>
-    <string name="group_template">Группа: Не указана</string>
+    <string name="full_name_template">ФИО: Алфёров Никита Дмитриевич</string>
+    <string name="group_template">Группа: БПОи-22-04</string>
     <string name="progress_header">Прогресс выполнения:</string>
     <string name="elementary_progress">Элементарный уровень: %d/15 заданий</string>
     <string name="basic_progress">Базовый уровень: %d/15 заданий</string>
@@ -39,6 +39,7 @@
     <string name="enter_transcription">Фонетическая транскрипция</string>
     <string name="check_transcription">Проверить</string>
     <string name="check_answers">Проверить ответы</string>
+
 
     <!-- Цвета -->
     <color name="success_background">#E8F5E9</color>
@@ -69,5 +70,25 @@
     <string name="attempts">Попыток: %d</string>
     <string name="close">Закрыть</string>
     <string name="fullscreen_image">Полноразмерное изображение</string>
-
+    <string name="stop_recording">Остановить запись</string>
+    <string name="recording">Идет запись...</string>
+    <string name="password">Пароль</string>
+    <string name="email">Email</string>
+    <string name="sign_in_to_continue">Войдите для продолжения</string>
+    <string name="welcome_back">С возвращением!</string>
+    <string name="app_logo">App Logo</string>
+    <string name="sign_up">Регистрация</string>
+    <string name="dont_have_an_account">Нет аккаунта?</string>
+    <string name="continue_with_google">Войти с помощью Google</string>
+    <string name="or">ИЛИ</string>
+    <string name="sign_in">Войти</string>
+    <string name="create_account">Давайте знакомиться!</string>
+    <string name="sign_up_to_continue">Зарегистрируйтесь для продолжения</string>
+    <string name="already_have_an_account">Уже есть аккаунт?</string>
+    <string name="level">Уровень</string>
+    <string name="lesson">Урок</string>
+    <string name="type">Тип</string>
+    <string name="empty_state">Empty state</string>
+    <string name="no_tasks_available">No tasks available</string>
+    <string name="change_user">Сменить пользователя</string>
 </resources>

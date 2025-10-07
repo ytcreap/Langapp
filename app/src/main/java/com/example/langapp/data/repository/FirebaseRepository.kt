@@ -107,8 +107,10 @@ class FirebaseRepository {
             "AUDIO_RECORDING" -> AudioRecordingTask(
                 taskname = data["name"] as? String ?: "",
                 id = id,
-                audioPrompt = data["audioPrompt"] as? String ?: "",
-                targetText = data["targetText"] as? String ?: "",
+                question = data["question"] as? String ?: "Повторите слово", // Добавляем question
+                audioPrompt = data["referenceAudio"] as? String ?: "", // Используем referenceAudio как audioPrompt
+                targetText = data["targetText"] as? String ?: (data["textHint"] as? String ?: ""),
+                textHint = data["textHint"] as? String,
                 maxAttempts = (data["maxAttempts"] as? Long)?.toInt() ?: 3
             )
 
