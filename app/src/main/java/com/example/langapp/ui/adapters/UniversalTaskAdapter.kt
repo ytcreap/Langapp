@@ -27,6 +27,7 @@ class UniversalTaskAdapter(
             is TaskSet -> VIEW_TYPE_TASK_SET
             is TextInputSet -> VIEW_TYPE_TEXT_INPUT_SET
             is AudioRecordingSet -> VIEW_TYPE_AUDIO_RECORDING_SET
+            is AlphabetTask -> VIEW_TYPE_ALPHABET
             else -> throw IllegalArgumentException("Unknown task type")
         }
     }
@@ -46,6 +47,7 @@ class UniversalTaskAdapter(
             VIEW_TYPE_TASK_SET -> TaskSetHolder(inflater.inflate(R.layout.holder_task_set, parent, false))
             VIEW_TYPE_TEXT_INPUT_SET -> TextInputSetHolder(inflater.inflate(R.layout.holder_text_input_set, parent, false))
             VIEW_TYPE_AUDIO_RECORDING_SET -> AudioRecordingSetHolder(inflater.inflate(R.layout.holder_audio_recording_set, parent, false))
+            VIEW_TYPE_ALPHABET -> AlphabetHolder(inflater.inflate(R.layout.holder_alphabet, parent, false)) // Добавляем новый holder
             else -> throw IllegalArgumentException("Unknown view type")
         }
     }
@@ -65,6 +67,7 @@ class UniversalTaskAdapter(
             is TaskSetHolder -> holder.bind(item as TaskSet, onItemClick)
             is TextInputSetHolder -> holder.bind(item as TextInputSet, onItemClick)
             is AudioRecordingSetHolder -> holder.bind(item as AudioRecordingSet, onItemClick)
+            is AlphabetHolder -> holder.bind(item as AlphabetTask) // Добавляем биндинг
         }
     }
 
@@ -83,5 +86,6 @@ class UniversalTaskAdapter(
         const val VIEW_TYPE_TASK_SET = 10
         const val VIEW_TYPE_TEXT_INPUT_SET = 11
         const val VIEW_TYPE_AUDIO_RECORDING_SET = 12
+        const val VIEW_TYPE_ALPHABET = 13
     }
 }

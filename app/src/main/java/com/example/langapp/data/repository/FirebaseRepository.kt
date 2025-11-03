@@ -163,7 +163,35 @@ class FirebaseRepository {
                 interactiveElements = emptyList()
             )
 
+            "ALPHABET" -> AlphabetTask(
+                taskname = data["name"] as? String ?: "",
+                id = id,
+                question = data["question"] as? String ?: "Нажимай и повторяй",
+                letters = parseLetters(data["letters"] as? Map<String, Map<String, String>>),
+                autoPlay = data["autoPlay"] as? Boolean ?: true
+            )
+
             else -> null
         }
+    }
+}
+
+private fun parseLetters(lettersMap: Map<String, Map<String, String>>?): List<AlphabetLetter> {
+    if (lettersMap == null) return emptyList()
+
+    val russianAlphabetOrder = listOf(
+        "А", "Б", "В", "Г", "Д", "Е", "Ё", "Ж", "З", "И", "Й",
+        "К", "Л", "М", "Н", "О", "П", "Р", "С", "Т", "У", "Ф",
+        "Х", "Ц", "Ч", "Ш", "Щ", "Ъ", "Ы", "Ь", "Э", "Ю", "Я"
+    )
+
+    return lettersMap.map { (_, letterData) ->
+        AlphabetLetter(
+            image = letterData["image"] ?: "",
+            sound = letterData["sound"] ?: "",
+            letter = letterData["letter"] ?: ""
+        )
+    }.sortedBy { letter ->
+        russianAlphabetOrder.indexOf(letter.letter)
     }
 }

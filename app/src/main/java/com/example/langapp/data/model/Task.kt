@@ -181,3 +181,21 @@ data class AudioRecordingSet(
     @get:PropertyName("tasks") val tasks: List<AudioRecordingTask>,
     @get:PropertyName("type") override val type: String = "AUDIO_RECORDING_SET"
 ) : Task()
+
+@Parcelize
+data class AlphabetLetter(
+    @get:PropertyName("image") val image: String,
+    @get:PropertyName("sound") val sound: String,
+    @get:PropertyName("letter") val letter: String
+) : Parcelable
+
+@Parcelize
+data class AlphabetTask(
+    @get:PropertyName("name") override val taskname: String,
+    @get:PropertyName("id") override val id: String,
+    @get:PropertyName("question") val question: String,
+    @get:PropertyName("letters") val letters: List<AlphabetLetter>,
+    @get:PropertyName("autoPlay") val autoPlay: Boolean = true
+) : Task() {
+    override val type: String = "ALPHABET"
+}

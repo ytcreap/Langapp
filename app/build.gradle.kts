@@ -50,6 +50,7 @@ dependencies {
     implementation(libs.androidx.ui.graphics.android)
     implementation(libs.androidx.material3.android)
     implementation(libs.firebase.firestore.ktx)
+    implementation(libs.androidx.gridlayout)
     val navVersion = "2.7.7" // Версия Navigation Component
 
     implementation("androidx.navigation:navigation-fragment-ktx:$navVersion")
