@@ -17,7 +17,6 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.tabs.TabLayoutMediator
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import java.util.Locale
 
 class VocabularyFragment : Fragment() {
     private var _binding: FragmentVocabularyBinding? = null
@@ -39,29 +38,29 @@ class VocabularyFragment : Fragment() {
         val args = requireArguments()
         val level = args.getString("LEVEL_KEY") ?: ""
         val lesson = args.getInt("TASK_NUMBER_KEY")
-        val rawType = args.getString("TASK_TYPE_KEY") ?: ""
-        val type = rawType.normalized()
+        val sectionName = args.getString("SECTION_NAME_KEY") ?: ""
+        val sectionId = args.getString("SECTION_ID_KEY") ?: ""
 
-        if (type.isEmpty()) {
+        if (sectionId.isEmpty()) {
             showErrorDialog()
             return
         }
 
-        // Загружаем задачи из Firebase
-        viewModel.loadTasks(level, lesson, type)
-        setupObservers(level, lesson, type)
-        setupHeader(level, lesson, type)
+        // Загружаем задачи из раздела по ID
+        viewModel.loadTasks(level, lesson, sectionId)
+        setupObservers(level, lesson, sectionName)
+        setupHeader(level, lesson, sectionName)
 
         binding.btnBack.setOnClickListener {
             findNavController().navigateUp()
         }
     }
 
-    private fun setupObservers(level: String, lesson: Int, type: String) {
+    private fun setupObservers(level: String, lesson: Int, sectionName: String) {
         lifecycleScope.launch {
             viewModel.tasks.collectLatest { tasks ->
                 if (tasks.isNotEmpty()) {
-                    setupViewPager(tasks, level, lesson, type)
+                    setupViewPager(tasks, level, lesson, sectionName)
                 } else {
                     showEmptyState()
                 }
@@ -81,8 +80,8 @@ class VocabularyFragment : Fragment() {
         }
     }
 
-    private fun setupViewPager(tasks: List<Task>, level: String, lesson: Int, type: String) {
-        val pagerAdapter = TaskPagerAdapter(this, tasks, level, lesson, type)
+    private fun setupViewPager(tasks: List<Task>, level: String, lesson: Int, sectionName: String) {
+        val pagerAdapter = TaskPagerAdapter(this, tasks, level, lesson, sectionName)
         binding.viewPager.adapter = pagerAdapter
 
         TabLayoutMediator(binding.tabLayout, binding.viewPager) { tab, position ->
@@ -96,35 +95,14 @@ class VocabularyFragment : Fragment() {
         binding.progressBar.visibility = View.GONE
     }
 
-    private fun String.normalized(): String {
-        return when (this.trim().lowercase(Locale.getDefault())) {
-            "vocabulary", "лексика", "lexicon" -> "vocabulary"
-            "phonetics", "фонетика" -> "phonetics"
-            "grammar", "грамматика" -> "grammar"
-            "texts", "тексты" -> "texts"
-            "test", "тест", "quiz" -> "test"
-            else -> {
-                Log.w("Normalize", "Unsupported type: '${this}'")
-                ""
-            }
-        }
-    }
-
-    private fun setupHeader(level: String, lesson: Int, type: String) {
+    private fun setupHeader(level: String, lesson: Int, sectionName: String) {
         // Устанавливаем заголовок
-        binding.tvHeader.text = when (type) {
-            "phonetics" -> "Фонетическое задание"
-            "vocabulary" -> "Лексическое задание"
-            "grammar" -> "Грамматическое задание"
-            "texts" -> "Работа с текстом"
-            "test" -> "Тестирование"
-            else -> "Задание"
-        }
+        binding.tvHeader.text = sectionName
 
         // Устанавливаем информацию о задании
         binding.tvLevel.text = level.uppercase()
         binding.tvLesson.text = lesson.toString()
-        binding.tvType.text = type.replaceFirstChar { it.uppercase() }
+        binding.tvType.text = sectionName
     }
 
     private fun showEmptyState() {
@@ -132,7 +110,7 @@ class VocabularyFragment : Fragment() {
             viewPager.visibility = View.GONE
             tabLayout.visibility = View.GONE
             cardEmptyState.visibility = View.VISIBLE
-            tvEmptyState.text = "Задания для этого урока пока недоступны"
+            tvEmptyState.text = "Задания для этого раздела пока недоступны"
             progressBar.visibility = View.GONE
         }
     }
@@ -140,16 +118,9 @@ class VocabularyFragment : Fragment() {
     private fun showErrorDialog() {
         MaterialAlertDialogBuilder(requireContext())
             .setTitle("Ошибка загрузки")
-            .setMessage("Неподдерживаемый тип задания: ${arguments?.getString("TASK_TYPE_KEY")}")
+            .setMessage("Раздел не найден")
             .setPositiveButton("OK") { _, _ -> findNavController().navigateUp() }
             .show()
-    }
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        arguments?.let {
-            outState.putAll(it)
-        }
     }
 
     override fun onDestroyView() {

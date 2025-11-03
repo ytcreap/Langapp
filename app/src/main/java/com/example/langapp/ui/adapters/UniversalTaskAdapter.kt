@@ -1,3 +1,4 @@
+// ui/adapters/UniversalTaskAdapter.kt
 package com.example.langapp.ui.adapters
 
 import android.view.LayoutInflater
@@ -23,6 +24,9 @@ class UniversalTaskAdapter(
             is AudioRecordingTask -> VIEW_TYPE_AUDIO_RECORDING
             is TextRecordingTask -> VIEW_TYPE_TEXT_RECORDING
             is TheoryTask -> VIEW_TYPE_THEORY
+            is TaskSet -> VIEW_TYPE_TASK_SET
+            is TextInputSet -> VIEW_TYPE_TEXT_INPUT_SET
+            is AudioRecordingSet -> VIEW_TYPE_AUDIO_RECORDING_SET
             else -> throw IllegalArgumentException("Unknown task type")
         }
     }
@@ -39,6 +43,9 @@ class UniversalTaskAdapter(
             VIEW_TYPE_AUDIO_RECORDING -> AudioRecordingHolder(inflater.inflate(R.layout.holder_audio_recording, parent, false))
             VIEW_TYPE_TEXT_RECORDING -> TextRecordingHolder(inflater.inflate(R.layout.holder_text_record, parent, false))
             VIEW_TYPE_THEORY -> TheoryHolder(inflater.inflate(R.layout.holder_theory, parent, false))
+            VIEW_TYPE_TASK_SET -> TaskSetHolder(inflater.inflate(R.layout.holder_task_set, parent, false))
+            VIEW_TYPE_TEXT_INPUT_SET -> TextInputSetHolder(inflater.inflate(R.layout.holder_text_input_set, parent, false))
+            VIEW_TYPE_AUDIO_RECORDING_SET -> AudioRecordingSetHolder(inflater.inflate(R.layout.holder_audio_recording_set, parent, false))
             else -> throw IllegalArgumentException("Unknown view type")
         }
     }
@@ -55,6 +62,9 @@ class UniversalTaskAdapter(
             is AudioRecordingHolder -> holder.bind(item as AudioRecordingTask, onItemClick)
             is TextRecordingHolder -> holder.bind(item as TextRecordingTask, onItemClick)
             is TheoryHolder -> holder.bind(item as TheoryTask, onItemClick)
+            is TaskSetHolder -> holder.bind(item as TaskSet, onItemClick)
+            is TextInputSetHolder -> holder.bind(item as TextInputSet, onItemClick)
+            is AudioRecordingSetHolder -> holder.bind(item as AudioRecordingSet, onItemClick)
         }
     }
 
@@ -70,5 +80,8 @@ class UniversalTaskAdapter(
         const val VIEW_TYPE_AUDIO_RECORDING = 7
         const val VIEW_TYPE_TEXT_RECORDING = 8
         const val VIEW_TYPE_THEORY = 9
+        const val VIEW_TYPE_TASK_SET = 10
+        const val VIEW_TYPE_TEXT_INPUT_SET = 11
+        const val VIEW_TYPE_AUDIO_RECORDING_SET = 12
     }
 }

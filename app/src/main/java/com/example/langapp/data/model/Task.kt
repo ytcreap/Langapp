@@ -154,3 +154,30 @@ data class PhoneticTask(
 ) : Task() {
     override val type: String = "phonetics"
 }
+
+// 10. Набор заданий с изображениями
+@Parcelize
+data class TaskSet(
+    @get:PropertyName("name") override val taskname: String,
+    @get:PropertyName("id") override val id: String,
+    @get:PropertyName("tasks") val tasks: List<ImageInputTask>,
+    @get:PropertyName("type") override val type: String = "TASK_SET"
+) : Task()
+
+// 11. Набор текстовых заданий
+@Parcelize
+data class TextInputSet(
+    @get:PropertyName("name") override val taskname: String,
+    @get:PropertyName("id") override val id: String,
+    @get:PropertyName("tasks") val tasks: List<TextInputTask>,
+    @get:PropertyName("type") override val type: String = "TEXT_INPUT_SET"
+) : Task()
+
+// 12. Набор аудио заданий
+@Parcelize
+data class AudioRecordingSet(
+    @get:PropertyName("name") override val taskname: String,
+    @get:PropertyName("id") override val id: String,
+    @get:PropertyName("tasks") val tasks: List<AudioRecordingTask>,
+    @get:PropertyName("type") override val type: String = "AUDIO_RECORDING_SET"
+) : Task()

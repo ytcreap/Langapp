@@ -13,7 +13,7 @@
     <string name="menu_slideshow">Slideshow</string>
 
     <string name="profile_title">Профиль пользователя</string>
-    <string name="full_name_template">ФИО: Алфёров Никита Дмитриевич</string>
+    <string name="full_name_template">ФИО: Алфёров Никита</string>
     <string name="group_template">Группа: БПОи-22-04</string>
     <string name="progress_header">Прогресс выполнения:</string>
     <string name="elementary_progress">Элементарный уровень: %d/15 заданий</string>

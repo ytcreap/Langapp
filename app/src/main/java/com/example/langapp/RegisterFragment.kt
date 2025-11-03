@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
+import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
@@ -33,7 +34,12 @@ class RegisterFragment : Fragment() {
         val emailEditText: EditText = view.findViewById(R.id.et_email)
         val passwordEditText: EditText = view.findViewById(R.id.et_password)
         val registerButton: Button = view.findViewById(R.id.btn_register)
+        val loginButton: TextView = view.findViewById(R.id.btn_login)
 
+        loginButton.setOnClickListener {
+            // Переход на экран регистрации
+            findNavController().navigate(R.id.action_register_to_login)
+        }
         registerButton.setOnClickListener {
             val email = emailEditText.text.toString()
             val password = passwordEditText.text.toString()

@@ -1,26 +1,29 @@
 package com.example.langapp.ui.gallery
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.GridLayout
-import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.example.langapp.R
 import com.example.langapp.databinding.FragmentGalleryBinding
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-
+import kotlinx.coroutines.launch
 
 class GalleryFragment : Fragment() {
 
     private var _binding: FragmentGalleryBinding? = null
     private val binding get() = _binding!!
+    private val viewModel: GalleryViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -91,13 +94,8 @@ class GalleryFragment : Fragment() {
             else -> level
         }
 
-        val items = arrayOf(
-            "Лексика",
-            "Фонетика",
-            "Грамматика",
-            "Тексты",
-            "Тест"
-        )
+        // Загружаем доступные разделы для этого урока
+        viewModel.loadAvailableSections(level, taskNumber)
 
         // Создаем кастомный layout для диалога
         val dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_task_selector, null)
@@ -106,59 +104,71 @@ class GalleryFragment : Fragment() {
 
         titleText.text = "$levelDisplayName • Урок $taskNumber"
 
-        // Создаем диалог и сохраняем ссылку
+        // Создаем диалог
         val dialog = MaterialAlertDialogBuilder(requireContext())
             .setView(dialogView)
             .create()
 
-        // Создаем кнопки для каждого типа задания
-        items.forEachIndexed { index, item ->
-            val button = LayoutInflater.from(requireContext()).inflate(R.layout.item_task, container, false)
-            val taskText = button.findViewById<TextView>(R.id.task_text)
-            taskText.text = item
+        // Наблюдаем за доступными разделами
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.availableSections.collect { sections ->
+                Log.d("GalleryFragment", "Loaded sections: ${sections.map { it.name }}")
 
-            button.setOnClickListener {
-                val type = when (index) {
-                    0 -> "vocabulary"
-                    1 -> "phonetics"
-                    2 -> "grammar"
-                    3 -> "texts"
-                    else -> "test"
+                // Очищаем контейнер
+                container.removeAllViews()
+
+                // Добавляем кнопки для каждого раздела
+                sections.forEach { section ->
+                    val button = LayoutInflater.from(requireContext()).inflate(R.layout.item_task, container, false)
+                    val taskText = button.findViewById<TextView>(R.id.task_text)
+                    taskText.text = section.name
+
+                    // Можно добавить описание, если нужно
+                    // val taskDesc = button.findViewById<TextView>(R.id.task_description)
+                    // taskDesc.text = section.description
+
+                    button.setOnClickListener {
+                        dialog.dismiss()
+                        navigateToTask(level, taskNumber, section.id) // Используем section.id для навигации
+                    }
+
+                    container.addView(button)
                 }
-                // Закрываем диалог перед навигацией
-                dialog.dismiss()
-                navigateToTask(level, taskNumber, type)
-            }
 
-            container.addView(button)
+                // Если разделов нет, показываем сообщение
+                if (sections.isEmpty()) {
+                    val emptyView = TextView(requireContext()).apply {
+                        text = "Разделы пока не добавлены"
+                        setPadding(50, 50, 50, 50)
+                        textAlignment = TextView.TEXT_ALIGNMENT_CENTER
+                    }
+                    container.addView(emptyView)
+                }
+            }
         }
 
         dialog.show()
     }
 
-    private fun navigateToTask(level: String, taskNumber: Int, taskType: String) {
+    private fun navigateToTask(level: String, taskNumber: Int, sectionId: String) {
+        // Нужно также получить название раздела для отображения
+        val section = viewModel.availableSections.value.find { it.id == sectionId }
+        val sectionName = section?.name ?: sectionId
+
         val args = Bundle().apply {
             putString("LEVEL_KEY", level)
             putInt("TASK_NUMBER_KEY", taskNumber)
-            putString("TASK_TYPE_KEY", taskType)
+            putString("SECTION_NAME_KEY", sectionName)
+            putString("SECTION_ID_KEY", sectionId) // Добавляем ID раздела
         }
         findNavController().navigate(
             R.id.action_gallery_to_vocabulary,
             args
         )
     }
-    /*
-        private fun openTaskContainer(lessonId: String) {
-            findNavController().navigate(
-                R.id.action_gallery_to_taskContainer,
-                bundleOf("lessonId" to lessonId)
-            )
-        }
-     */
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
-
     }
 }

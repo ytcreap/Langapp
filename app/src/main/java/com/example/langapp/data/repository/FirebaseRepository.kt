@@ -1,4 +1,3 @@
-// data/repository/FirebaseRepository.kt
 package com.example.langapp.data.repository
 
 import com.google.firebase.auth.FirebaseAuth
@@ -10,7 +9,6 @@ import com.example.langapp.data.model.*
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
-import kotlinx.coroutines.tasks.await
 
 class FirebaseRepository {
     private val database = FirebaseDatabase.getInstance()
@@ -21,16 +19,46 @@ class FirebaseRepository {
         fun getInstance(): FirebaseRepository = _instance
     }
 
-    fun getTasks(level: String, lesson: Int, taskType: String): Flow<List<Task>> = callbackFlow {
-        // Проверяем аутентификацию
-        val currentUser = auth.currentUser
-        if (currentUser == null) {
-            trySend(emptyList())
-            close()
-            return@callbackFlow
+    // Получение всех доступных разделов для урока
+    // data/repository/FirebaseRepository.kt
+    fun getAvailableSections(level: String, lesson: Int): Flow<List<Section>> = callbackFlow {
+        val reference = database.getReference("Lessons/$level/$lesson/sections")
+
+        val listener = object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val sections = mutableListOf<Section>()
+
+                if (!snapshot.exists()) {
+                    trySend(emptyList())
+                    return
+                }
+
+                snapshot.children.forEach { sectionSnapshot ->
+                    val sectionData = sectionSnapshot.value as? Map<String, Any>
+                    sectionData?.let { data ->
+                        val section = createSectionFromData(data, sectionSnapshot.key ?: "")
+                        section?.let { sections.add(it) }
+                    }
+                }
+
+                trySend(sections)
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                println("Firebase error: ${error.message}")
+                trySend(emptyList())
+            }
         }
 
-        val reference = database.getReference("Lessons/$level/$lesson/$taskType")
+        reference.addValueEventListener(listener)
+        awaitClose {
+            reference.removeEventListener(listener)
+        }
+    }
+
+    // Получение задач из конкретного раздела
+    fun getTasks(level: String, lesson: Int, sectionId: String): Flow<List<Task>> = callbackFlow {
+        val reference = database.getReference("Lessons/$level/$lesson/sections/$sectionId/tasks")
 
         val listener = object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
@@ -53,19 +81,31 @@ class FirebaseRepository {
             }
 
             override fun onCancelled(error: DatabaseError) {
-                // Логируем ошибку, но не закрываем поток
                 println("Firebase error: ${error.message}")
                 trySend(emptyList())
             }
         }
 
         reference.addValueEventListener(listener)
-
         awaitClose {
             reference.removeEventListener(listener)
         }
     }
 
+    private fun createSectionFromData(data: Map<String, Any>, id: String): Section? {
+        return try {
+            Section(
+                id = id,
+                name = data["name"] as? String ?: "",
+                description = data["description"] as? String ?: "",
+                tasks = emptyList() // Задачи загружаются отдельно
+            )
+        } catch (e: Exception) {
+            null
+        }
+    }
+
+    // Существующий метод создания задач (без изменений)
     private fun createTaskFromData(data: Map<String, Any>, id: String): Task? {
         return when (data["type"] as? String) {
             "MULTIPLE_CHOICE" -> MultipleChoiceTask(
@@ -107,8 +147,8 @@ class FirebaseRepository {
             "AUDIO_RECORDING" -> AudioRecordingTask(
                 taskname = data["name"] as? String ?: "",
                 id = id,
-                question = data["question"] as? String ?: "Повторите слово", // Добавляем question
-                audioPrompt = data["referenceAudio"] as? String ?: "", // Используем referenceAudio как audioPrompt
+                question = data["question"] as? String ?: "Повторите слово",
+                audioPrompt = data["referenceAudio"] as? String ?: "",
                 targetText = data["targetText"] as? String ?: (data["textHint"] as? String ?: ""),
                 textHint = data["textHint"] as? String,
                 maxAttempts = (data["maxAttempts"] as? Long)?.toInt() ?: 3
@@ -124,25 +164,6 @@ class FirebaseRepository {
             )
 
             else -> null
-        }
-    }
-
-    fun saveUserProgress(level: String, lesson: Int, taskId: String, score: Int) {
-        val currentUser = auth.currentUser ?: return
-
-        val progressRef = database.getReference("UserProgress/${currentUser.uid}/$level/$lesson")
-        progressRef.get().addOnSuccessListener { snapshot ->
-            val currentProgress = if (snapshot.exists()) {
-                snapshot.getValue(UserProgress::class.java) ?: UserProgress()
-            } else {
-                UserProgress()
-            }
-
-            currentProgress.completedTasks = currentProgress.completedTasks + taskId
-            currentProgress.score = maxOf(currentProgress.score ?: 0, score)
-            currentProgress.completed = currentProgress.completedTasks.size >= 3
-
-            progressRef.setValue(currentProgress)
         }
     }
 }
