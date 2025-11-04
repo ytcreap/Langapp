@@ -1,24 +1,26 @@
 package com.example.langapp.ui.holders
 
+import android.media.MediaPlayer
 import android.view.View
 import android.widget.TextView
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.langapp.R
-import com.example.langapp.data.model.AlphabetTask
-import com.example.langapp.ui.adapters.AlphabetLetterAdapter
+import com.example.langapp.data.model.SyllableTask
+import com.example.langapp.ui.adapters.SyllableLetterAdapter
 
-class AlphabetHolder(view: View) : RecyclerView.ViewHolder(view) {
+class SyllableHolder(view: View) : RecyclerView.ViewHolder(view) {
     private val questionText: TextView = view.findViewById(R.id.questionText)
     private val lettersRecyclerView: RecyclerView = view.findViewById(R.id.lettersRecyclerView)
-    private var adapter: AlphabetLetterAdapter? = null
+    private var adapter: SyllableLetterAdapter? = null
 
-    fun bind(task: AlphabetTask) {
-        questionText.text = task.question
+    fun bind(task: SyllableTask) {
+        // Устанавливаем правильное название задания
+        questionText.text = task.taskname
 
-        // Сетка 5 колонок
+        // Настраиваем RecyclerView для букв (5 колонок как в алфавите)
         lettersRecyclerView.layoutManager = GridLayoutManager(itemView.context, 5)
-        adapter = AlphabetLetterAdapter(task.letters)
+        adapter = SyllableLetterAdapter(task.letters)
         lettersRecyclerView.adapter = adapter
         lettersRecyclerView.setHasFixedSize(true)
     }

@@ -11,8 +11,7 @@
         android:id="@+id/tv_task_info"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="16sp"
-        android:layout_marginBottom="16dp"/>
+        android:textSize="16sp" />
 
     <!-- Список заданий -->
     <androidx.recyclerview.widget.RecyclerView

@@ -24,30 +24,37 @@ class AlphabetLetterAdapter(
         fun bind(letter: AlphabetLetter) {
             letterText.text = letter.letter
 
-            // Загружаем картинку квадратной и подгоняем размер
+            // Загружаем картинку
             Glide.with(itemView.context)
                 .load(letter.image)
-                //.placeholder(R.drawable.ic_letter_placeholder)
-                //.error(R.drawable.ic_letter_error)
                 .centerCrop()
                 .override(100, 100)
                 .into(letterImage)
 
+            // Обработка клика - просто воспроизводим звук
             itemView.setOnClickListener {
                 playSound(letter.sound)
             }
         }
 
         private fun playSound(soundUrl: String) {
+            // Останавливаем предыдущее воспроизведение
             mediaPlayer?.release()
             mediaPlayer = MediaPlayer()
+
             try {
-                mediaPlayer?.setDataSource(soundUrl)
-                mediaPlayer?.setOnPreparedListener { it.start() }
-                mediaPlayer?.setOnCompletionListener { it.release() }
-                mediaPlayer?.prepareAsync()
+                mediaPlayer?.apply {
+                    setDataSource(soundUrl)
+                    setOnPreparedListener { it.start() }
+                    setOnCompletionListener {
+                        it.release()
+                        mediaPlayer = null
+                    }
+                    prepareAsync()
+                }
             } catch (e: Exception) {
                 mediaPlayer?.release()
+                mediaPlayer = null
             }
         }
     }
@@ -63,4 +70,9 @@ class AlphabetLetterAdapter(
     }
 
     override fun getItemCount() = letters.size
+
+    fun onDestroy() {
+        mediaPlayer?.release()
+        mediaPlayer = null
+    }
 }

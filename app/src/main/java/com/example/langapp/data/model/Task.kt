@@ -199,3 +199,28 @@ data class AlphabetTask(
 ) : Task() {
     override val type: String = "ALPHABET"
 }
+
+@Parcelize
+data class SyllableItem(
+    @get:PropertyName("sound") val sound: String,
+    @get:PropertyName("text") val text: String
+) : Parcelable
+
+@Parcelize
+data class SyllableLetter(
+    val letter: String,
+    val items: List<SyllableItem>,
+    val image: String = "", // для совместимости с AlphabetLetter
+    val sound: String = "" // для совместимости с AlphabetLetter
+) : Parcelable
+
+
+@Parcelize
+data class SyllableTask(
+    @get:PropertyName("name") override val taskname: String,
+    @get:PropertyName("id") override val id: String,
+    @get:PropertyName("question") val question: String,
+    val letters: List<SyllableLetter>,
+    @get:PropertyName("type") override val type: String = "SYLLABLE"
+) : Task()
+

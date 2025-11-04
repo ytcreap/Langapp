@@ -171,6 +171,13 @@ class FirebaseRepository {
                 autoPlay = data["autoPlay"] as? Boolean ?: true
             )
 
+            "SYLLABLE" -> SyllableTask(
+                taskname = data["name"] as? String ?: "",
+                id = id,
+                question = data["question"] as? String ?: "Нажимай на буквы и слоги",
+                letters = parseSyllableLetters(data)
+            )
+
             else -> null
         }
     }
@@ -194,4 +201,29 @@ private fun parseLetters(lettersMap: Map<String, Map<String, String>>?): List<Al
     }.sortedBy { letter ->
         russianAlphabetOrder.indexOf(letter.letter)
     }
+}
+
+private fun parseSyllableLetters(data: Map<String, Any>): List<SyllableLetter> {
+    val letters = mutableListOf<SyllableLetter>()
+
+    // Парсим согласные ИЛИ гласные в зависимости от данных
+    val consonants = data["consonants"] as? Map<String, List<Map<String, String>>>
+    val vowels = data["vowels"] as? Map<String, List<Map<String, String>>>
+
+    val sourceData = consonants ?: vowels ?: return emptyList()
+
+    sourceData.forEach { (letter, items) ->
+        letters.add(SyllableLetter(
+            letter = letter,
+            items = items.map { itemData ->
+                SyllableItem(
+                    sound = itemData["sound"] ?: "",
+                    text = itemData["text"] ?: ""
+                )
+            }
+        ))
+    }
+
+    // Сортируем по алфавиту
+    return letters.sortedBy { it.letter }
 }

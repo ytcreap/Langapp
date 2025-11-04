@@ -28,6 +28,7 @@ class UniversalTaskAdapter(
             is TextInputSet -> VIEW_TYPE_TEXT_INPUT_SET
             is AudioRecordingSet -> VIEW_TYPE_AUDIO_RECORDING_SET
             is AlphabetTask -> VIEW_TYPE_ALPHABET
+            is SyllableTask -> VIEW_TYPE_SYLLABLE
             else -> throw IllegalArgumentException("Unknown task type")
         }
     }
@@ -48,6 +49,7 @@ class UniversalTaskAdapter(
             VIEW_TYPE_TEXT_INPUT_SET -> TextInputSetHolder(inflater.inflate(R.layout.holder_text_input_set, parent, false))
             VIEW_TYPE_AUDIO_RECORDING_SET -> AudioRecordingSetHolder(inflater.inflate(R.layout.holder_audio_recording_set, parent, false))
             VIEW_TYPE_ALPHABET -> AlphabetHolder(inflater.inflate(R.layout.holder_alphabet, parent, false)) // Добавляем новый holder
+            VIEW_TYPE_SYLLABLE -> SyllableHolder(inflater.inflate(R.layout.holder_syllable, parent, false))
             else -> throw IllegalArgumentException("Unknown view type")
         }
     }
@@ -67,7 +69,8 @@ class UniversalTaskAdapter(
             is TaskSetHolder -> holder.bind(item as TaskSet, onItemClick)
             is TextInputSetHolder -> holder.bind(item as TextInputSet, onItemClick)
             is AudioRecordingSetHolder -> holder.bind(item as AudioRecordingSet, onItemClick)
-            is AlphabetHolder -> holder.bind(item as AlphabetTask) // Добавляем биндинг
+            is AlphabetHolder -> holder.bind(item as AlphabetTask)
+            is SyllableHolder -> holder.bind(item as SyllableTask)
         }
     }
 
@@ -87,5 +90,15 @@ class UniversalTaskAdapter(
         const val VIEW_TYPE_TEXT_INPUT_SET = 11
         const val VIEW_TYPE_AUDIO_RECORDING_SET = 12
         const val VIEW_TYPE_ALPHABET = 13
+        const val VIEW_TYPE_SYLLABLE = 14
+    }
+
+    override fun onViewRecycled(holder: RecyclerView.ViewHolder) {
+        super.onViewRecycled(holder)
+        when (holder) {
+            is AlphabetHolder -> holder.onDestroy()
+            is SyllableHolder -> holder.onDestroy()
+        }
+
     }
 }

@@ -3,19 +3,21 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:padding="3dp">
+    android:background="@drawable/bg_letter_item"
+    android:padding="12dp"
+    android:layout_margin="8dp">
 
     <TextView
-        android:id="@+id/questionText"
+        android:id="@+id/letterText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:textSize="20sp"
+        android:textStyle="bold"
         android:gravity="center"
-        android:text="Нажимай на буквы и слушай звуки"
-        android:textSize="18sp"
-        android:textStyle="bold" />
+        android:layout_marginBottom="8dp" />
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/lettersRecyclerView"
+        android:id="@+id/syllablesRecyclerView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
