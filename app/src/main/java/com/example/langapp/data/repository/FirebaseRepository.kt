@@ -115,7 +115,8 @@ class FirebaseRepository {
                 options = (data["options"] as? List<*>)?.filterIsInstance<String>() ?: emptyList(),
                 correctAnswerIndex = (data["correctAnswer"] as? Long)?.toInt() ?: 0,
                 audioHint = data["audioHint"] as? String,
-                explanation = data["explanation"] as? String
+                explanation = data["explanation"] as? String,
+                image = data["image"] as? String // Добавляем изображение
             )
 
             "IMAGE_INPUT" -> ImageInputTask(
@@ -151,7 +152,8 @@ class FirebaseRepository {
                 audioPrompt = data["referenceAudio"] as? String ?: "",
                 targetText = data["targetText"] as? String ?: (data["textHint"] as? String ?: ""),
                 textHint = data["textHint"] as? String,
-                maxAttempts = (data["maxAttempts"] as? Long)?.toInt() ?: 3
+                maxAttempts = (data["maxAttempts"] as? Long)?.toInt() ?: 3,
+                image = data["image"] as? String // Добавляем изображение
             )
 
             "THEORY" -> TheoryTask(
@@ -177,6 +179,65 @@ class FirebaseRepository {
                 question = data["question"] as? String ?: "Нажимай на буквы и слоги",
                 letters = parseSyllableLetters(data)
             )
+
+            "AUDIO_RECORDING_SET" -> {
+                val tasksData = data["tasks"] as? Map<String, Any> ?: emptyMap()
+                val audioTasks = mutableListOf<AudioRecordingTask>()
+
+                tasksData.forEach { (taskKey, taskValue) ->
+                    when (taskValue) {
+                        is String -> {
+                            // Старый формат: "Вы завтракаете": "audio_url"
+                            audioTasks.add(
+                                AudioRecordingTask(
+                                    taskname = taskKey,
+                                    id = "${id}_${taskKey.hashCode()}",
+                                    question = "Повторите фразу",
+                                    audioPrompt = taskValue,
+                                    targetText = taskKey,
+                                    textHint = taskKey,
+                                    maxAttempts = 3,
+                                    image = null
+                                )
+                            )
+                        }
+                        is Map<*, *> -> {
+                            // Новый формат: "audio_task_1": { "name": "...", "referenceAudio": "...", ... }
+                            val taskMap = taskValue as Map<String, Any>
+                            audioTasks.add(
+                                AudioRecordingTask(
+                                    taskname = taskMap["name"] as? String ?: taskKey,
+                                    id = "${id}_${taskKey}",
+                                    question = taskMap["question"] as? String ?: "Повторите фразу",
+                                    audioPrompt = taskMap["referenceAudio"] as? String ?: "",
+                                    targetText = taskMap["targetText"] as? String ?: "",
+                                    textHint = taskMap["textHint"] as? String,
+                                    maxAttempts = (taskMap["maxAttempts"] as? Long)?.toInt() ?: 3,
+                                    image = taskMap["image"] as? String
+                                )
+                            )
+                        }
+                    }
+                }
+
+                AudioRecordingSet(
+                    taskname = data["name"] as? String ?: "",
+                    id = id,
+                    tasks = audioTasks
+                )
+            }
+
+            "MULTIPLE_CHOICE_SET" -> {
+                val tasksData = data["tasks"] as? Map<String, Map<String, Any>> ?: emptyMap()
+                val multipleChoiceTasks = tasksData.mapNotNull { (taskId, taskData) ->
+                    createTaskFromData(taskData, taskId) as? MultipleChoiceTask
+                }
+                MultipleChoiceSet(
+                    taskname = data["name"] as? String ?: "",
+                    id = id,
+                    tasks = multipleChoiceTasks
+                )
+            }
 
             else -> null
         }

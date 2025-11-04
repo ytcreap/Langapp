@@ -1,19 +1,23 @@
+// ui/holders/MultipleChoiceHolder.kt
 package com.example.langapp.ui.holders
 
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.Button
+import android.widget.ImageView
 import android.widget.RadioButton
 import android.widget.RadioGroup
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.example.langapp.R
 import com.example.langapp.data.model.MultipleChoiceTask
 
 class MultipleChoiceHolder(view: View) : RecyclerView.ViewHolder(view) {
     private val questionText: TextView = view.findViewById(R.id.questionText)
+    private val questionImage: ImageView = view.findViewById(R.id.questionImage)
     private val optionsContainer: RadioGroup = view.findViewById(R.id.optionsContainer)
     private val submitButton: Button = view.findViewById(R.id.submitButton)
     private val resultText: TextView = view.findViewById(R.id.resultText)
@@ -24,6 +28,17 @@ class MultipleChoiceHolder(view: View) : RecyclerView.ViewHolder(view) {
         optionsContainer.removeAllViews()
         resultText.isVisible = false
         submitButton.isEnabled = true
+
+        // Показываем изображение, если есть
+        task.image?.let { imageUrl ->
+            questionImage.visibility = View.VISIBLE
+            Glide.with(itemView.context)
+                .load(imageUrl)
+                .centerCrop()
+                .into(questionImage)
+        } ?: run {
+            questionImage.visibility = View.GONE
+        }
 
         // Создаем варианты ответов
         task.options.forEachIndexed { index, option ->

@@ -31,6 +31,7 @@ data class MultipleChoiceTask(
     @get:PropertyName("correctAnswerIndex") val correctAnswerIndex: Int,
     @get:PropertyName("audioHint") val audioHint: String? = null,
     @get:PropertyName("explanation") val explanation: String? = null,
+    @get:PropertyName("image") val image: String? = null, // Добавляем поддержку изображений
     val selectedIndex: Int? = null
 ) : Task() {
     override val type: String = "MULTIPLE_CHOICE"
@@ -106,11 +107,12 @@ data class ImageRecordingTask(
 data class AudioRecordingTask(
     @get:PropertyName("name") override val taskname: String,
     @get:PropertyName("id") override val id: String,
-    @get:PropertyName("question") val question: String, // Добавляем поле question
+    @get:PropertyName("question") val question: String,
     @get:PropertyName("audioPrompt") val audioPrompt: String,
     @get:PropertyName("targetText") val targetText: String,
-    @get:PropertyName("textHint") val textHint: String? = null, // Добавляем textHint
-    @get:PropertyName("maxAttempts") val maxAttempts: Int = 3
+    @get:PropertyName("textHint") val textHint: String? = null,
+    @get:PropertyName("maxAttempts") val maxAttempts: Int = 3,
+    @get:PropertyName("image") val image: String? = null // Добавляем поддержку изображений
 ) : Task() {
     override val type: String = "AUDIO_RECORDING"
 }
@@ -222,5 +224,14 @@ data class SyllableTask(
     @get:PropertyName("question") val question: String,
     val letters: List<SyllableLetter>,
     @get:PropertyName("type") override val type: String = "SYLLABLE"
+) : Task()
+
+// data/model/Task.kt
+@Parcelize
+data class MultipleChoiceSet(
+    @get:PropertyName("name") override val taskname: String,
+    @get:PropertyName("id") override val id: String,
+    @get:PropertyName("tasks") val tasks: List<MultipleChoiceTask>,
+    @get:PropertyName("type") override val type: String = "MULTIPLE_CHOICE_SET"
 ) : Task()
 

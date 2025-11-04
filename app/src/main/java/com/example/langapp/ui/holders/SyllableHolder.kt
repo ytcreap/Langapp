@@ -16,7 +16,7 @@ class SyllableHolder(view: View) : RecyclerView.ViewHolder(view) {
 
     fun bind(task: SyllableTask) {
         // Устанавливаем правильное название задания
-        questionText.text = task.taskname
+        questionText.text = task.question
 
         // Настраиваем RecyclerView для букв (5 колонок как в алфавите)
         lettersRecyclerView.layoutManager = GridLayoutManager(itemView.context, 5)
