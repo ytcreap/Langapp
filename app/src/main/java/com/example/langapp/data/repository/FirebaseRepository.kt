@@ -20,7 +20,6 @@ class FirebaseRepository {
     }
 
     // Получение всех доступных разделов для урока
-    // data/repository/FirebaseRepository.kt
     fun getAvailableSections(level: String, lesson: Int): Flow<List<Section>> = callbackFlow {
         val reference = database.getReference("Lessons/$level/$lesson/sections")
 
@@ -239,7 +238,147 @@ class FirebaseRepository {
                 )
             }
 
+            "IMAGE_AUDIO_SET" -> {
+                // Устаревший тип - преобразуем в новый VocabularyImageAudioSet если нужно
+                val vocabulary = data["vocabulary"] as? Map<String, Map<String, String>> ?: emptyMap()
+
+                VocabularyImageAudioSet(
+                    taskname = data["name"] as? String ?: "",
+                    id = id,
+                    question = data["question"] as? String ?: "Слушай и запоминай слова",
+                    vocabulary = vocabulary
+                )
+            }
+
+            "VOCABULARY_IMAGE_AUDIO_SET" -> {
+                // Получаем вложенные задачи
+                val tasksMap = data["tasks"] as? Map<String, Map<String, String>> ?: emptyMap()
+
+                // Преобразуем в LinkedHashMap для сохранения порядка
+                val linkedTasksMap = LinkedHashMap(tasksMap)
+
+                VocabularyImageAudioSet(
+                    taskname = data["name"] as? String ?: "",
+                    id = id,
+                    question = data["question"] as? String ?: "Слушай и запоминай слова",
+                    vocabulary = linkedTasksMap
+                )
+            }
+
+            "DIALOGUE" -> {
+                val dialogueData = data["dialogue"] as? List<Map<String, String>> ?: emptyList()
+                val dialogueLines = dialogueData.mapNotNull { lineData ->
+                    DialogueLine(
+                        sound = lineData["sound"] ?: "",
+                        text = lineData["text"] ?: ""
+                    )
+                }
+
+                DialogueTask(
+                    taskname = data["name"] as? String ?: "",
+                    id = id,
+                    question = data["question"] as? String ?: "Послушайте диалог",
+                    dialogue = dialogueLines,
+                    image = data["image"] as? String,
+                    autoPlay = data["autoPlay"] as? Boolean ?: true
+                )
+            }
+
+            "DIALOGUE_SET" -> {
+                val dialoguesData = data["dialogues"] as? Map<String, List<Map<String, String>>> ?: emptyMap()
+                val parsedDialogues = mutableMapOf<String, List<DialogueLine>>()
+
+                dialoguesData.forEach { (dialogKey, dialogLines) ->
+                    val lines = dialogLines.mapNotNull { lineData ->
+                        DialogueLine(
+                            sound = lineData["sound"] ?: "",
+                            text = lineData["text"] ?: ""
+                        )
+                    }
+                    parsedDialogues[dialogKey] = lines
+                }
+
+                DialogueSet(
+                    taskname = data["name"] as? String ?: "",
+                    id = id,
+                    question = data["question"] as? String ?: "Нажмите на диалог чтобы увидеть реплики",
+                    dialogues = parsedDialogues
+                )
+            }
+
+            "TEXT_INPUT_SET" -> {
+                val tasksData = data["tasks"] as? Map<String, Map<String, Any>> ?: emptyMap()
+                val textInputTasks = tasksData.mapNotNull { (taskId, taskData) ->
+                    TextInputTask(
+                        taskname = taskData["name"] as? String ?: taskData["question"] as? String ?: "Задание",
+                        id = "${id}_$taskId",
+                        question = taskData["question"] as? String ?: "",
+                        correctAnswer = taskData["correctAnswer"] as? String ?: "",
+                        audioSupport = taskData["audioSupport"] as? String
+                    )
+                }
+                TextInputSet(
+                    taskname = data["name"] as? String ?: "",
+                    id = id,
+                    question = data["question"] as? String ?: "Ответьте на вопросы",
+                    tasks = textInputTasks
+                )
+            }
+
+            "IMAGE_INPUT_SET" -> {
+                val tasksData = data["tasks"] as? Map<String, Map<String, Any>> ?: emptyMap()
+                val imageInputTasks = tasksData.mapNotNull { (taskId, taskData) ->
+                    ImageInputTask(
+                        taskname = taskData["name"] as? String ?: taskData["question"] as? String ?: "Задание",
+                        id = "${id}_$taskId",
+                        question = taskData["question"] as? String ?: "",
+                        image = taskData["image"] as? String ?: "",
+                        correctAnswer = taskData["correctAnswer"] as? String ?: "",
+                        hint = taskData["hint"] as? String
+                    )
+                }
+                ImageInputSet(
+                    taskname = data["name"] as? String ?: "",
+                    id = id,
+                    question = data["question"] as? String ?: "Ответьте на вопросы по картинкам",
+                    tasks = imageInputTasks
+                )
+            }
+
             else -> null
+        }
+    }
+}
+
+private fun createImageAudioTask(data: Map<String, Any>, id: String): ImageAudioTask? {
+    return try {
+        ImageAudioTask(
+            taskname = data["name"] as? String ?: "",
+            id = id,
+            image = data["image"] as? String ?: "",
+            audio = data["audio"] as? String ?: "",
+            questions = parseQuestions(data["questions"] as? List<Map<String, Any>>)
+        )
+    } catch (e: Exception) {
+        e.printStackTrace()
+        null
+    }
+}
+
+private fun parseQuestions(questionsData: List<Map<String, Any>>?): List<Question> {
+    if (questionsData == null) return emptyList()
+
+    return questionsData.mapNotNull { questionData ->
+        try {
+            Question(
+                taskname = questionData["name"] as? String ?: "",
+                question = questionData["question"] as? String ?: "",
+                options = (questionData["options"] as? List<*>)?.filterIsInstance<String>() ?: emptyList(),
+                answer = questionData["answer"] as? String ?: "",
+                hint = questionData["hint"] as? String
+            )
+        } catch (e: Exception) {
+            null
         }
     }
 }
@@ -276,7 +415,7 @@ private fun parseSyllableLetters(data: Map<String, Any>): List<SyllableLetter> {
     sourceData.forEach { (letter, items) ->
         letters.add(SyllableLetter(
             letter = letter,
-            items = items.map { itemData ->
+                items = items.map { itemData ->
                 SyllableItem(
                     sound = itemData["sound"] ?: "",
                     text = itemData["text"] ?: ""

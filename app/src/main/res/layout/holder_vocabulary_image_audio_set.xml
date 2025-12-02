@@ -1,37 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:padding="16dp">
+    android:paddingVertical="16dp">
 
-    <!-- Заголовок набора -->
     <TextView
         android:id="@+id/titleText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textSize="22sp"
         android:textStyle="bold"
-        android:textColor="@color/black"
-        android:layout_marginBottom="8dp"
-        tools:text="Набор заданий" />
+        android:paddingHorizontal="16dp"
+        android:paddingBottom="8dp"
+        android:textColor="@color/white" />
 
-    <!-- Вопрос/инструкция -->
     <TextView
         android:id="@+id/questionText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textSize="16sp"
-        android:textColor="@color/gray"
-        android:layout_marginBottom="16dp"
-        tools:text="Ответьте на вопросы" />
+        android:paddingHorizontal="16dp"
+        android:paddingBottom="24dp" />
 
-    <!-- RecyclerView для списка заданий -->
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/tasksRecyclerView"
+        android:id="@+id/vocabularyRecyclerView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:paddingBottom="8dp" />
 
 </LinearLayout>

@@ -171,6 +171,7 @@ data class TaskSet(
 data class TextInputSet(
     @get:PropertyName("name") override val taskname: String,
     @get:PropertyName("id") override val id: String,
+    @get:PropertyName("question") val question: String,
     @get:PropertyName("tasks") val tasks: List<TextInputTask>,
     @get:PropertyName("type") override val type: String = "TEXT_INPUT_SET"
 ) : Task()
@@ -235,3 +236,62 @@ data class MultipleChoiceSet(
     @get:PropertyName("type") override val type: String = "MULTIPLE_CHOICE_SET"
 ) : Task()
 
+@Parcelize
+data class ImageAudioSet(
+    @get:PropertyName("name") override val taskname: String,
+    @get:PropertyName("id") override val id: String,
+    @get:PropertyName("tasks") val tasks: List<ImageAudioTask>,
+    @get:PropertyName("type") override val type: String = "IMAGE_AUDIO_SET"
+) : Task()
+
+@Parcelize
+data class VocabularyItem(
+    @get:PropertyName("word") val word: String,
+    @get:PropertyName("image") val image: String,
+    @get:PropertyName("audio") val audio: String
+) : Parcelable
+
+@Parcelize
+data class VocabularyImageAudioSet(
+    @get:PropertyName("name") override val taskname: String,
+    @get:PropertyName("id") override val id: String,
+    @get:PropertyName("question") val question: String = "Слушай и запоминай слова",
+    @get:PropertyName("tasks") val vocabulary: Map<String, Map<String, String>>, // Изменяем PropertyName на "tasks"
+    @get:PropertyName("type") override val type: String = "VOCABULARY_IMAGE_AUDIO_SET"
+) : Task()
+
+@Parcelize
+data class DialogueLine(
+    @get:PropertyName("sound") val sound: String,
+    @get:PropertyName("text") val text: String
+) : Parcelable
+
+@Parcelize
+data class DialogueTask(
+    @get:PropertyName("name") override val taskname: String,
+    @get:PropertyName("id") override val id: String,
+    @get:PropertyName("question") val question: String = "Послушайте диалог",
+    @get:PropertyName("dialogue") val dialogue: List<DialogueLine>,
+    @get:PropertyName("image") val image: String? = null, // Опциональное изображение для диалога
+    @get:PropertyName("autoPlay") val autoPlay: Boolean = true // Автовоспроизведение по порядку
+) : Task() {
+    override val type: String = "DIALOGUE"
+}
+
+@Parcelize
+data class DialogueSet(
+    @get:PropertyName("name") override val taskname: String,
+    @get:PropertyName("id") override val id: String,
+    @get:PropertyName("question") val question: String = "Диалоги для прослушивания",
+    @get:PropertyName("dialogues") val dialogues: Map<String, List<DialogueLine>>, // dialog0, dialog1, etc
+    @get:PropertyName("type") override val type: String = "DIALOGUE_SET"
+) : Task()
+
+@Parcelize
+data class ImageInputSet(
+    @get:PropertyName("name") override val taskname: String,
+    @get:PropertyName("id") override val id: String,
+    @get:PropertyName("question") val question: String = "Ответьте на вопросы по картинкам",
+    @get:PropertyName("tasks") val tasks: List<ImageInputTask>,
+    @get:PropertyName("type") override val type: String = "IMAGE_INPUT_SET"
+) : Task()

@@ -1,6 +1,8 @@
 // ui/adapters/UniversalTaskAdapter.kt
+
 package com.example.langapp.ui.adapters
 
+import android.media.MediaPlayer
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
@@ -14,7 +16,7 @@ class UniversalTaskAdapter(
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     override fun getItemViewType(position: Int): Int {
-        return when (items[position]) {
+        return when (val task = items[position]) {
             is MultipleChoiceTask -> VIEW_TYPE_MULTIPLE_CHOICE
             is ImageInputTask -> VIEW_TYPE_IMAGE_INPUT
             is TextInputTask -> VIEW_TYPE_TEXT_INPUT
@@ -30,7 +32,11 @@ class UniversalTaskAdapter(
             is AlphabetTask -> VIEW_TYPE_ALPHABET
             is SyllableTask -> VIEW_TYPE_SYLLABLE
             is MultipleChoiceSet -> VIEW_TYPE_MULTIPLE_CHOICE_SET
-            else -> throw IllegalArgumentException("Unknown task type")
+            is VocabularyImageAudioSet -> VIEW_TYPE_VOCABULARY_IMAGE_AUDIO_SET
+            is DialogueTask -> VIEW_TYPE_DIALOGUE
+            is DialogueSet -> VIEW_TYPE_DIALOGUE_SET
+            is ImageInputSet -> VIEW_TYPE_IMAGE_INPUT_SET // Добавляем новый тип
+            else -> throw IllegalArgumentException("Unknown task type: ${task.javaClass.simpleName}")
         }
     }
 
@@ -49,10 +55,14 @@ class UniversalTaskAdapter(
             VIEW_TYPE_TASK_SET -> TaskSetHolder(inflater.inflate(R.layout.holder_task_set, parent, false))
             VIEW_TYPE_TEXT_INPUT_SET -> TextInputSetHolder(inflater.inflate(R.layout.holder_text_input_set, parent, false))
             VIEW_TYPE_AUDIO_RECORDING_SET -> AudioRecordingSetHolder(inflater.inflate(R.layout.holder_audio_recording_set, parent, false))
-            VIEW_TYPE_ALPHABET -> AlphabetHolder(inflater.inflate(R.layout.holder_alphabet, parent, false)) // Добавляем новый holder
+            VIEW_TYPE_ALPHABET -> AlphabetHolder(inflater.inflate(R.layout.holder_alphabet, parent, false))
             VIEW_TYPE_SYLLABLE -> SyllableHolder(inflater.inflate(R.layout.holder_syllable, parent, false))
             VIEW_TYPE_MULTIPLE_CHOICE_SET -> MultipleChoiceSetHolder(inflater.inflate(R.layout.holder_multiple_choice_set, parent, false))
-            else -> throw IllegalArgumentException("Unknown view type")
+            VIEW_TYPE_VOCABULARY_IMAGE_AUDIO_SET -> VocabularyImageAudioSetHolder(inflater.inflate(R.layout.holder_vocabulary_image_audio_set, parent, false))
+            VIEW_TYPE_DIALOGUE -> DialogueHolder(inflater.inflate(R.layout.holder_dialogue, parent, false))
+            VIEW_TYPE_DIALOGUE_SET -> DialogueSetHolder(inflater.inflate(R.layout.holder_dialogue_set, parent, false))
+            VIEW_TYPE_IMAGE_INPUT_SET -> ImageInputSetHolder(inflater.inflate(R.layout.holder_image_input_set, parent, false))
+            else -> throw IllegalArgumentException("Unknown view type: $viewType")
         }
     }
 
@@ -74,6 +84,10 @@ class UniversalTaskAdapter(
             is AlphabetHolder -> holder.bind(item as AlphabetTask)
             is SyllableHolder -> holder.bind(item as SyllableTask)
             is MultipleChoiceSetHolder -> holder.bind(item as MultipleChoiceSet, onItemClick)
+            is VocabularyImageAudioSetHolder -> holder.bind(item as VocabularyImageAudioSet)
+            is DialogueHolder -> holder.bind(item as DialogueTask)
+            is DialogueSetHolder -> holder.bind(item as DialogueSet)
+            is ImageInputSetHolder -> holder.bind(item as ImageInputSet, onItemClick)
         }
     }
 
@@ -95,15 +109,9 @@ class UniversalTaskAdapter(
         const val VIEW_TYPE_ALPHABET = 13
         const val VIEW_TYPE_SYLLABLE = 14
         const val VIEW_TYPE_MULTIPLE_CHOICE_SET = 15
-    }
-
-    override fun onViewRecycled(holder: RecyclerView.ViewHolder) {
-        super.onViewRecycled(holder)
-        when (holder) {
-            is AudioRecordingHolder -> holder.onDestroy()
-            is AlphabetHolder -> holder.onDestroy()
-            is SyllableHolder -> holder.onDestroy()
-        }
-
+        const val VIEW_TYPE_VOCABULARY_IMAGE_AUDIO_SET = 16
+        const val VIEW_TYPE_DIALOGUE = 17
+        const val VIEW_TYPE_DIALOGUE_SET = 18
+        const val VIEW_TYPE_IMAGE_INPUT_SET = 19 // Новый тип
     }
 }

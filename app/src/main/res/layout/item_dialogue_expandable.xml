@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:layout_marginBottom="16dp">
+
+    <!-- Вся карточка заголовка диалога -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/dialogueHeaderCard"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="8dp"
+        android:layout_marginBottom="4dp"
+        app:cardCornerRadius="12dp"
+        app:cardElevation="2dp"
+        app:cardUseCompatPadding="true"
+        android:clickable="true"
+        android:focusable="true">
+
+        <!-- Внутренний контейнер (вся эта область кликабельна) -->
+        <LinearLayout
+            android:id="@+id/headerContent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:padding="16dp"
+            android:background="?attr/selectableItemBackground"
+            android:clickable="true"
+            android:focusable="true">
+
+            <!-- Иконка стрелки -->
+            <ImageView
+                android:id="@+id/expandIcon"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_marginEnd="12dp"
+                android:src="@drawable/ic_expand_more"
+                android:rotation="0"
+                android:contentDescription="Развернуть"
+                android:clickable="false"
+                android:focusable="false" />
+
+            <!-- Название диалога -->
+            <TextView
+                android:id="@+id/dialogueTitle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:textColor="@color/black"
+                tools:text="Диалог 1"
+                android:clickable="false"
+                android:focusable="false" />
+
+            <!-- Индикатор количества реплик -->
+            <TextView
+                android:id="@+id/dialogueCount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="14sp"
+                android:textColor="@color/gray_300"
+                tools:text="4 реплики"
+                android:clickable="false"
+                android:focusable="false" />
+
+        </LinearLayout>
+
+    </androidx.cardview.widget.CardView>
+
+    <!-- Контейнер для реплик (изначально скрыт) -->
+    <LinearLayout
+        android:id="@+id/repliesContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:visibility="gone"
+        android:paddingStart="24dp"
+        android:paddingEnd="8dp"
+        android:paddingBottom="8dp">
+
+        <!-- Здесь будут добавляться карточки с репликами -->
+
+    </LinearLayout>
+
+</LinearLayout>

@@ -6,6 +6,14 @@ plugins {
 }
 
 android {
+    signingConfigs {
+        create("release") {
+            storeFile = file("C:\\Users\\alferov.nd\\AndroidStudioProjects\\Langapp\\key.jks")
+            storePassword = "12345678"
+            keyAlias = "key0"
+            keyPassword = "12345678"
+        }
+    }
     namespace = "com.example.langapp"
     compileSdk = 35
 
@@ -21,6 +29,7 @@ android {
 
     buildTypes {
         release {
+            signingConfig = signingConfigs.getByName("release")
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),

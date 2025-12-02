@@ -7,7 +7,7 @@
     android:orientation="vertical"
     android:padding="16dp">
 
-    <!-- Заголовок набора -->
+    <!-- Заголовок набора диалогов -->
     <TextView
         android:id="@+id/titleText"
         android:layout_width="match_parent"
@@ -16,7 +16,7 @@
         android:textStyle="bold"
         android:textColor="@color/black"
         android:layout_marginBottom="8dp"
-        tools:text="Набор заданий" />
+        tools:text="Набор диалогов" />
 
     <!-- Вопрос/инструкция -->
     <TextView
@@ -24,13 +24,13 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textSize="16sp"
-        android:textColor="@color/gray"
+        android:textColor="@color/gray_300"
         android:layout_marginBottom="16dp"
-        tools:text="Ответьте на вопросы" />
+        tools:text="Нажмите на диалог чтобы увидеть реплики" />
 
-    <!-- RecyclerView для списка заданий -->
+    <!-- RecyclerView для списка диалогов -->
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/tasksRecyclerView"
+        android:id="@+id/dialoguesRecyclerView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 

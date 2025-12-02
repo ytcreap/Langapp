@@ -91,4 +91,6 @@
     <string name="empty_state">Empty state</string>
     <string name="no_tasks_available">No tasks available</string>
     <string name="change_user">Сменить пользователя</string>
+
+    <string name="play_sound">Воспроизвести звук</string>
 </resources>

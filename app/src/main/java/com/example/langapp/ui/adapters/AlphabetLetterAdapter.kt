@@ -10,12 +10,19 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.langapp.R
 import com.example.langapp.data.model.AlphabetLetter
+import java.text.Collator
+import java.util.Locale
 
 class AlphabetLetterAdapter(
     private val letters: List<AlphabetLetter>
 ) : RecyclerView.Adapter<AlphabetLetterAdapter.LetterViewHolder>() {
 
     private var mediaPlayer: MediaPlayer? = null
+
+    // Сортируем буквы при инициализации
+    private val sortedLetters = letters.sortedBy { letter ->
+        normalizeLetterForSorting(letter.letter)
+    }
 
     inner class LetterViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         private val letterImage: ImageView = view.findViewById(R.id.letterImage)
@@ -25,11 +32,16 @@ class AlphabetLetterAdapter(
             letterText.text = letter.letter
 
             // Загружаем картинку
-            Glide.with(itemView.context)
-                .load(letter.image)
-                .centerCrop()
-                .override(100, 100)
-                .into(letterImage)
+            if (letter.image.isNotEmpty()) {
+                Glide.with(itemView.context)
+                    .load(letter.image)
+                    .centerCrop()
+                    .override(100, 100)
+                    .into(letterImage)
+            } else {
+                // Если нет картинки, показываем заглушку или скрываем
+                letterImage.setImageResource(R.drawable.placeholder_image)
+            }
 
             // Обработка клика - просто воспроизводим звук
             itemView.setOnClickListener {
@@ -53,6 +65,7 @@ class AlphabetLetterAdapter(
                     prepareAsync()
                 }
             } catch (e: Exception) {
+                e.printStackTrace()
                 mediaPlayer?.release()
                 mediaPlayer = null
             }
@@ -66,13 +79,25 @@ class AlphabetLetterAdapter(
     }
 
     override fun onBindViewHolder(holder: LetterViewHolder, position: Int) {
-        holder.bind(letters[position])
+        holder.bind(sortedLetters[position])
     }
 
-    override fun getItemCount() = letters.size
+    override fun getItemCount() = sortedLetters.size
 
     fun onDestroy() {
         mediaPlayer?.release()
         mediaPlayer = null
+    }
+
+    /**
+     * Нормализация буквы для сортировки
+     */
+    private fun normalizeLetterForSorting(letter: String): String {
+        return letter
+            .lowercase(Locale("ru", "RU"))
+            .replace("ё", "е")
+            .replace("й", "и")
+            .replace(Regex("[́`']"), "")
+            .trim()
     }
 }

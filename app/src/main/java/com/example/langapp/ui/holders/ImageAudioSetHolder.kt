@@ -5,20 +5,20 @@ import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.langapp.R
-import com.example.langapp.data.model.TextInputSet
+import com.example.langapp.data.model.ImageAudioSet
 import com.example.langapp.data.model.Task
 import com.example.langapp.ui.adapters.UniversalTaskAdapter
 
-class TextInputSetHolder(view: View) : RecyclerView.ViewHolder(view) {
+class ImageAudioSetHolder(view: View) : RecyclerView.ViewHolder(view) {
     private val titleText: TextView = view.findViewById(R.id.titleText)
-    private val questionText: TextView = view.findViewById(R.id.questionText)
     private val tasksRecyclerView: RecyclerView = view.findViewById(R.id.tasksRecyclerView)
 
-    fun bind(textInputSet: TextInputSet, onItemClick: (Task) -> Unit) {
-        titleText.text = textInputSet.taskname
-        questionText.text = textInputSet.question
+    fun bind(imageAudioSet: ImageAudioSet, onItemClick: (Task) -> Unit) {
+        // Устанавливаем заголовок набора
+        titleText.text = imageAudioSet.taskname
 
-        val adapter = UniversalTaskAdapter(textInputSet.tasks, onItemClick)
+        // Настраиваем RecyclerView для подзадач
+        val adapter = UniversalTaskAdapter(imageAudioSet.tasks, onItemClick)
         tasksRecyclerView.layoutManager = LinearLayoutManager(itemView.context)
         tasksRecyclerView.adapter = adapter
     }

@@ -1,5 +1,6 @@
 package com.example.langapp.ui.holders
 
+import android.media.MediaPlayer
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
@@ -18,13 +19,19 @@ class TextInputHolder(view: View) : RecyclerView.ViewHolder(view) {
     private val submitButton: Button = view.findViewById(R.id.submitButton)
     private val resultText: TextView = view.findViewById(R.id.resultText)
 
+    private var mediaPlayer: MediaPlayer? = null
+
     fun bind(task: TextInputTask) {
         promptText.text = task.question
         inputField.setText("")
         resultText.isVisible = false
         submitButton.isEnabled = true
 
-        audioButton.visibility = if (task.audioSupport != null) View.VISIBLE else View.GONE
+        // Настройка кнопки аудио
+        audioButton.visibility = if (task.audioSupport?.isNotEmpty() == true) View.VISIBLE else View.GONE
+        audioButton.setOnClickListener {
+            playAudio(task.audioSupport)
+        }
 
         submitButton.setOnClickListener {
             val userAnswer = inputField.text.toString().trim()
@@ -47,5 +54,40 @@ class TextInputHolder(view: View) : RecyclerView.ViewHolder(view) {
             submitButton.isEnabled = false
             inputField.isEnabled = false
         }
+    }
+
+    private fun playAudio(audioUrl: String?) {
+        audioUrl ?: return
+
+        mediaPlayer?.release()
+        mediaPlayer = null
+
+        try {
+            mediaPlayer = MediaPlayer().apply {
+                setDataSource(audioUrl)
+                setOnPreparedListener {
+                    it.start()
+                }
+                setOnCompletionListener {
+                    release()
+                    mediaPlayer = null
+                }
+                setOnErrorListener { mp, what, extra ->
+                    release()
+                    mediaPlayer = null
+                    true
+                }
+                prepareAsync()
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            mediaPlayer?.release()
+            mediaPlayer = null
+        }
+    }
+
+    fun onDestroy() {
+        mediaPlayer?.release()
+        mediaPlayer = null
     }
 }
