@@ -248,7 +248,8 @@ data class ImageAudioSet(
 data class VocabularyItem(
     @get:PropertyName("word") val word: String,
     @get:PropertyName("image") val image: String,
-    @get:PropertyName("audio") val audio: String
+    @get:PropertyName("audio") val audio: String,
+    @get:PropertyName("text") val fullText: String = ""
 ) : Parcelable
 
 @Parcelize

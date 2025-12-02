@@ -33,10 +33,13 @@ class VocabularyImageAudioSetHolder(view: View) : RecyclerView.ViewHolder(view) 
             .mapNotNull { (word, data) ->
                 val image = data["image"] ?: ""
                 val sound = data["sound"] ?: ""
+                val text = data["text"] ?: "" // Получаем текст, если есть
 
                 // Если нет изображения, используем пустую строку
                 if (word.isNotEmpty() && sound.isNotEmpty()) {
-                    VocabularyItem(word, image, sound)
+                    // Если есть текст, используем его вместо названия
+                    val displayText = if (text.isNotEmpty()) text else word
+                    VocabularyItem(displayText, image, sound)
                 } else {
                     null
                 }

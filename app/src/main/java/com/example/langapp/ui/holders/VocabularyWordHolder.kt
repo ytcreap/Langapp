@@ -1,5 +1,6 @@
 package com.example.langapp.ui.holders
 
+import android.text.method.ScrollingMovementMethod
 import android.view.View
 import android.widget.ImageButton
 import android.widget.ImageView
@@ -22,14 +23,44 @@ class VocabularyWordHolder(view: View) : RecyclerView.ViewHolder(view) {
         vocabularyItem: VocabularyItem,
         onPlayClick: (String) -> Unit
     ) {
-        // Устанавливаем слово
+        // Устанавливаем текст (может быть длинным)
         wordTextView.text = vocabularyItem.word
+
+        // Настраиваем TextView для длинного текста
+        wordTextView.isSingleLine = false
+        wordTextView.maxLines = Int.MAX_VALUE // Не ограничиваем количество строк
+        wordTextView.ellipsize = null // Отключаем троеточие в конце
+        wordTextView.movementMethod = ScrollingMovementMethod.getInstance() // Добавляем возможность скролла
+
+        // Проверяем, длинный ли это текст (больше 100 символов)
+        val isLongText = vocabularyItem.word.length > 100
+
+        if (isLongText) {
+            // Для длинного текста увеличиваем отступы
+            textContainer.setPadding(
+                textContainer.paddingLeft,
+                24.dpToPx(itemView.context),
+                textContainer.paddingRight,
+                24.dpToPx(itemView.context)
+            )
+            // Увеличиваем размер шрифта для лучшей читаемости
+            wordTextView.textSize = 16f
+        } else {
+            // Для короткого текста используем стандартные отступы
+            textContainer.setPadding(
+                textContainer.paddingLeft,
+                16.dpToPx(itemView.context),
+                textContainer.paddingRight,
+                16.dpToPx(itemView.context)
+            )
+            wordTextView.textSize = 18f
+        }
 
         // Проверяем наличие изображения
         val hasImage = vocabularyItem.image.isNotEmpty()
 
         if (hasImage) {
-            // Показываем изображение и делаем карточку высокой
+            // Показываем изображение
             wordImageView.visibility = View.VISIBLE
             wordImageView.layoutParams.height = 200.dpToPx(itemView.context)
 
@@ -39,18 +70,18 @@ class VocabularyWordHolder(view: View) : RecyclerView.ViewHolder(view) {
                 .placeholder(R.drawable.placeholder_image)
                 .centerInside()
                 .into(wordImageView)
-        } else {
-            // Скрываем изображение, делаем карточку компактной
-            wordImageView.visibility = View.GONE
-            wordImageView.layoutParams.height = 0
 
-            // Увеличиваем отступы текстового контейнера
+            // Для карточек с изображением уменьшаем отступы текста
             textContainer.setPadding(
                 textContainer.paddingLeft,
-                16.dpToPx(itemView.context),
+                12.dpToPx(itemView.context),
                 textContainer.paddingRight,
-                16.dpToPx(itemView.context)
+                12.dpToPx(itemView.context)
             )
+        } else {
+            // Скрываем изображение
+            wordImageView.visibility = View.GONE
+            wordImageView.layoutParams.height = 0
         }
 
         // Функция воспроизведения аудио
@@ -93,12 +124,6 @@ class VocabularyWordHolder(view: View) : RecyclerView.ViewHolder(view) {
         // Клик на текст
         wordTextView.setOnClickListener {
             playAudio.invoke()
-        }
-
-        // Долгое нажатие
-        cardView.setOnLongClickListener {
-            // Например, добавить в избранное или показать детали
-            true
         }
     }
 }

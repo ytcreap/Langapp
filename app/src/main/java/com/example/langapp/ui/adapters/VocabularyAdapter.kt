@@ -9,8 +9,7 @@ import com.example.langapp.ui.holders.VocabularyWordHolder
 
 class VocabularyAdapter(
     private val items: List<VocabularyItem>,
-    private val onPlayClick: (String) -> Unit,
-    private val onItemClick: ((VocabularyItem) -> Unit)? = null
+    private val onPlayClick: (String) -> Unit
 ) : RecyclerView.Adapter<VocabularyWordHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VocabularyWordHolder {
@@ -20,8 +19,7 @@ class VocabularyAdapter(
     }
 
     override fun onBindViewHolder(holder: VocabularyWordHolder, position: Int) {
-        val item = items[position]
-        holder.bind(item, onPlayClick)
+        holder.bind(items[position], onPlayClick)
     }
 
     override fun getItemCount(): Int = items.size
