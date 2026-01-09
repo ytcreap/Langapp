@@ -90,5 +90,30 @@
                 android:paddingTop="8dp">
             </GridLayout>
         </LinearLayout>
+        <!-- Дополнительные -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:orientation="vertical">
+
+            <Button
+                android:id="@+id/btn_additional"
+                style="?attr/materialButtonOutlinedStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Лингвокультурологический уровень"
+                app:icon="@drawable/ic_expand_more"
+                app:iconGravity="end" />
+
+            <GridLayout
+                android:id="@+id/grid_additional"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:columnCount="5"
+                android:visibility="gone"
+                android:paddingTop="8dp">
+            </GridLayout>
+        </LinearLayout>
     </LinearLayout>
 </ScrollView>

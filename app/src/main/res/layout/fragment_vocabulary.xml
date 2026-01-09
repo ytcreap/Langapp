@@ -35,8 +35,8 @@
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btn_back"
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
                     android:insetTop="0dp"
                     android:insetBottom="0dp"
                     app:icon="@drawable/ic_arrow_back"
@@ -49,21 +49,21 @@
                     android:id="@+id/tv_header"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
                     android:layout_weight="1"
-                    android:textSize="20sp"
-                    android:textStyle="bold"
                     android:textColor="?android:attr/textColorPrimary"
-                    android:layout_marginStart="8dp"/>
+                    android:textSize="18sp"
+                android:textStyle="bold" />
             </LinearLayout>
 
-            <!-- Разделитель -->
-            <View
+
+            <!-- Информация о задании // DEBUG mode -->
+            <!--View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:layout_marginVertical="12dp"
                 android:background="?android:attr/dividerHorizontal"/>
 
-            <!-- Информация о задании -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -156,31 +156,27 @@
                         android:textStyle="bold"
                         android:layout_marginTop="4dp"/>
                 </LinearLayout>
-            </LinearLayout>
+            </LinearLayout-->
         </LinearLayout>
     </androidx.cardview.widget.CardView>
 
     <!-- Карточка с вкладками -->
-    <androidx.cardview.widget.CardView
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/tab_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:strokeColor="?attr/colorOutline"
-        app:strokeWidth="10dp"
-        app:elevation="0dp"
-        app:cardCornerRadius="12dp"
-        android:layout_marginHorizontal="1dp"
-        android:layout_marginBottom="16dp">
+        app:tabGravity="fill"
+        app:tabIndicatorColor="?attr/colorPrimary"
+        app:tabMode="scrollable"
+        app:tabSelectedTextColor="?attr/colorPrimary"
+        app:tabTextColor="?android:attr/textColorSecondary"
+        app:tabMinWidth="0dp"
+    app:tabPaddingStart="8dp"
+    app:tabPaddingEnd="8dp"
+    android:layout_marginBottom="8dp"
+    />
 
-        <com.google.android.material.tabs.TabLayout
-            android:id="@+id/tab_layout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:tabMode="fixed"
-            app:tabGravity="fill"
-            app:tabIndicatorColor="?attr/colorPrimary"
-            app:tabSelectedTextColor="?attr/colorPrimary"
-            app:tabTextColor="?android:attr/textColorSecondary"/>
-    </androidx.cardview.widget.CardView>
+    <!-- Удалена пустая карточка -->
 
     <!-- ViewPager в карточке -->
     <androidx.cardview.widget.CardView
@@ -192,12 +188,37 @@
         app:elevation="0dp"
         app:cardCornerRadius="12dp"
         android:layout_marginHorizontal="1dp"
-        android:layout_marginBottom="6dp">
+        android:layout_marginBottom="5dp">
 
         <androidx.viewpager2.widget.ViewPager2
             android:id="@+id/view_pager"
             android:layout_width="match_parent"
             android:layout_height="match_parent"/>
+    </androidx.cardview.widget.CardView>
+
+    <!-- Кнопка "Дальше" -->
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:strokeColor="?attr/colorOutline"
+        app:strokeWidth="10dp"
+        app:elevation="0dp"
+        app:cardCornerRadius="12dp"
+        android:layout_marginHorizontal="1dp"
+        android:layout_marginBottom="6dp">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_next"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:text="      Дальше"
+            android:textSize="16sp"
+            android:gravity="center"
+        android:textAlignment="center"
+        app:icon="@drawable/ic_arrow_forward"
+        app:iconGravity="end"
+        style="@style/Widget.Material3.Button"/>
     </androidx.cardview.widget.CardView>
 
     <!-- ProgressBar посередине -->

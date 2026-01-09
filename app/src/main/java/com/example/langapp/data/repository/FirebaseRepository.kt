@@ -108,7 +108,7 @@ class FirebaseRepository {
     private fun createTaskFromData(data: Map<String, Any>, id: String): Task? {
         return when (data["type"] as? String) {
             "MULTIPLE_CHOICE" -> MultipleChoiceTask(
-                taskname = data["name"] as? String ?: "",
+                taskname = data["name"] as? String ?: "Задание ${id}",
                 id = id,
                 question = data["question"] as? String ?: "",
                 options = (data["options"] as? List<*>)?.filterIsInstance<String>() ?: emptyList(),
@@ -119,7 +119,7 @@ class FirebaseRepository {
             )
 
             "IMAGE_INPUT" -> ImageInputTask(
-                taskname = data["name"] as? String ?: "",
+                taskname = data["name"] as? String ?: "Задание ${id}",
                 id = id,
                 question = data["question"] as? String ?: "",
                 image = data["image"] as? String ?: "",
@@ -128,7 +128,7 @@ class FirebaseRepository {
             )
 
             "TEXT_INPUT" -> TextInputTask(
-                taskname = data["name"] as? String ?: "",
+                taskname = data["name"] as? String ?: "Задание ${id}",
                 id = id,
                 question = data["question"] as? String ?: "",
                 correctAnswer = data["correctAnswer"] as? String ?: "",
@@ -136,7 +136,7 @@ class FirebaseRepository {
             )
 
             "TEXT_RECORDING" -> TextRecordingTask(
-                taskname = data["name"] as? String ?: "",
+                taskname = data["name"] as? String ?: "Задание ${id}",
                 id = id,
                 text = data["text"] as? String ?: "",
                 referenceAudio = data["referenceAudio"] as? String ?: "",
@@ -145,7 +145,7 @@ class FirebaseRepository {
             )
 
             "AUDIO_RECORDING" -> AudioRecordingTask(
-                taskname = data["name"] as? String ?: "",
+                taskname = data["name"] as? String ?: "Задание ${id}",
                 id = id,
                 question = data["question"] as? String ?: "Повторите слово",
                 audioPrompt = data["referenceAudio"] as? String ?: "",
@@ -156,7 +156,7 @@ class FirebaseRepository {
             )
 
             "THEORY" -> TheoryTask(
-                taskname = data["name"] as? String ?: "",
+                taskname = data["name"] as? String ?: "Задание ${id}",
                 id = id,
                 image = data["image"] as? String ?: "",
                 title = data["title"] as? String ?: "",
@@ -165,7 +165,7 @@ class FirebaseRepository {
             )
 
             "ALPHABET" -> AlphabetTask(
-                taskname = data["name"] as? String ?: "",
+                taskname = data["name"] as? String ?: "Задание ${id}",
                 id = id,
                 question = data["question"] as? String ?: "Нажимай и повторяй",
                 letters = parseLetters(data["letters"] as? Map<String, Map<String, String>>),
@@ -173,7 +173,7 @@ class FirebaseRepository {
             )
 
             "SYLLABLE" -> SyllableTask(
-                taskname = data["name"] as? String ?: "",
+                taskname = data["name"] as? String ?: "Задание ${id}",
                 id = id,
                 question = data["question"] as? String ?: "Нажимай на буквы и слоги",
                 letters = parseSyllableLetters(data)
@@ -205,7 +205,7 @@ class FirebaseRepository {
                             val taskMap = taskValue as Map<String, Any>
                             audioTasks.add(
                                 AudioRecordingTask(
-                                    taskname = taskMap["name"] as? String ?: taskKey,
+                                    taskname = data["name"] as? String ?: "Задание ${id}",
                                     id = "${id}_${taskKey}",
                                     question = taskMap["question"] as? String ?: "Повторите фразу",
                                     audioPrompt = taskMap["referenceAudio"] as? String ?: "",
@@ -220,7 +220,7 @@ class FirebaseRepository {
                 }
 
                 AudioRecordingSet(
-                    taskname = data["name"] as? String ?: "",
+                    taskname = data["name"] as? String ?: "Задание ${id}",
                     id = id,
                     tasks = audioTasks
                 )
@@ -232,7 +232,7 @@ class FirebaseRepository {
                     createTaskFromData(taskData, taskId) as? MultipleChoiceTask
                 }
                 MultipleChoiceSet(
-                    taskname = data["name"] as? String ?: "",
+                    taskname = data["name"] as? String ?: "Задание ${id}",
                     id = id,
                     tasks = multipleChoiceTasks
                 )
@@ -243,7 +243,7 @@ class FirebaseRepository {
                 val vocabulary = data["vocabulary"] as? Map<String, Map<String, String>> ?: emptyMap()
 
                 VocabularyImageAudioSet(
-                    taskname = data["name"] as? String ?: "",
+                    taskname = data["name"] as? String ?: "Задание ${id}",
                     id = id,
                     question = data["question"] as? String ?: "Слушай и запоминай слова",
                     vocabulary = vocabulary
@@ -258,7 +258,7 @@ class FirebaseRepository {
                 val linkedTasksMap = LinkedHashMap(tasksMap)
 
                 VocabularyImageAudioSet(
-                    taskname = data["name"] as? String ?: "",
+                    taskname = data["name"] as? String ?: "Задание ${id}",
                     id = id,
                     question = data["question"] as? String ?: "Слушай и запоминай слова",
                     vocabulary = linkedTasksMap
@@ -275,7 +275,7 @@ class FirebaseRepository {
                 }
 
                 DialogueTask(
-                    taskname = data["name"] as? String ?: "",
+                    taskname = data["name"] as? String ?: "Задание ${id}",
                     id = id,
                     question = data["question"] as? String ?: "Послушайте диалог",
                     dialogue = dialogueLines,
@@ -299,7 +299,7 @@ class FirebaseRepository {
                 }
 
                 DialogueSet(
-                    taskname = data["name"] as? String ?: "",
+                    taskname = data["name"] as? String ?: "Задание ${id}",
                     id = id,
                     question = data["question"] as? String ?: "Нажмите на диалог чтобы увидеть реплики",
                     dialogues = parsedDialogues
@@ -310,7 +310,7 @@ class FirebaseRepository {
                 val tasksData = data["tasks"] as? Map<String, Map<String, Any>> ?: emptyMap()
                 val textInputTasks = tasksData.mapNotNull { (taskId, taskData) ->
                     TextInputTask(
-                        taskname = taskData["name"] as? String ?: taskData["question"] as? String ?: "Задание",
+                        taskname = data["name"] as? String ?: "Задание ${id}",
                         id = "${id}_$taskId",
                         question = taskData["question"] as? String ?: "",
                         correctAnswer = taskData["correctAnswer"] as? String ?: "",
@@ -318,7 +318,7 @@ class FirebaseRepository {
                     )
                 }
                 TextInputSet(
-                    taskname = data["name"] as? String ?: "",
+                    taskname = data["name"] as? String ?: "Задание ${id}",
                     id = id,
                     question = data["question"] as? String ?: "Ответьте на вопросы",
                     tasks = textInputTasks
@@ -329,7 +329,7 @@ class FirebaseRepository {
                 val tasksData = data["tasks"] as? Map<String, Map<String, Any>> ?: emptyMap()
                 val imageInputTasks = tasksData.mapNotNull { (taskId, taskData) ->
                     ImageInputTask(
-                        taskname = taskData["name"] as? String ?: taskData["question"] as? String ?: "Задание",
+                        taskname = data["name"] as? String ?: "Задание ${id}",
                         id = "${id}_$taskId",
                         question = taskData["question"] as? String ?: "",
                         image = taskData["image"] as? String ?: "",
@@ -338,7 +338,7 @@ class FirebaseRepository {
                     )
                 }
                 ImageInputSet(
-                    taskname = data["name"] as? String ?: "",
+                    taskname = data["name"] as? String ?: "Задание ${id}",
                     id = id,
                     question = data["question"] as? String ?: "Ответьте на вопросы по картинкам",
                     tasks = imageInputTasks
@@ -348,12 +348,52 @@ class FirebaseRepository {
             else -> null
         }
     }
+    fun checkIfLessonExists(level: String, lesson: Int, callback: (Boolean) -> Unit) {
+        val reference = database.getReference("Lessons/$level/$lesson")
+        reference.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                callback(snapshot.exists())
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                callback(false)
+            }
+        })
+    }
+
+    fun getFirstSectionOfLesson(level: String, lesson: Int): Flow<Section?> = callbackFlow {
+        val reference = database.getReference("Lessons/$level/$lesson/sections")
+
+        val listener = object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                if (snapshot.exists() && snapshot.children.firstOrNull() != null) {
+                    val firstSectionSnapshot = snapshot.children.first()
+                    val sectionData = firstSectionSnapshot.value as? Map<String, Any>
+                    sectionData?.let { data ->
+                        val section = createSectionFromData(data, firstSectionSnapshot.key ?: "")
+                        trySend(section)
+                        return
+                    }
+                }
+                trySend(null)
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                trySend(null)
+            }
+        }
+
+        reference.addValueEventListener(listener)
+        awaitClose {
+            reference.removeEventListener(listener)
+        }
+    }
 }
 
 private fun createImageAudioTask(data: Map<String, Any>, id: String): ImageAudioTask? {
     return try {
         ImageAudioTask(
-            taskname = data["name"] as? String ?: "",
+            taskname = data["name"] as? String ?: "Задание ${id}",
             id = id,
             image = data["image"] as? String ?: "",
             audio = data["audio"] as? String ?: "",

@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.langapp.data.model.Section
 import com.example.langapp.data.model.Task
 import com.example.langapp.data.repository.FirebaseRepository
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -43,4 +44,25 @@ class GalleryViewModel : ViewModel() {
             }
         }
     }
+
+    // В файле GalleryViewModel.kt
+    fun checkIfLessonExists(level: String, lesson: Int, callback: (Boolean) -> Unit) {
+        viewModelScope.launch {
+            try {
+                val repository = FirebaseRepository.getInstance()
+                repository.checkIfLessonExists(level, lesson) { exists ->
+                    callback(exists)
+                }
+            } catch (e: Exception) {
+                callback(false)
+            }
+        }
+    }
+
+    fun getFirstSectionOfLesson(level: String, lesson: Int): Flow<Section?> {
+        val repository = FirebaseRepository.getInstance()
+        return repository.getFirstSectionOfLesson(level, lesson)
+    }
+
+
 }

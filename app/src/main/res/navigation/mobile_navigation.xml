@@ -58,23 +58,12 @@
             android:name="TASK_NUMBER_KEY"
             app:argType="integer"/>
         <argument
-            android:name="TASK_TYPE_KEY"
+            android:name="SECTION_NAME_KEY"
+            app:argType="string"/>
+        <argument
+            android:name="SECTION_ID_KEY"
             app:argType="string"/>
     </fragment>
-
-    <action
-        android:id="@+id/action_gallery_to_vocabulary"
-        app:destination="@id/vocabularyFragment">
-        <argument
-            android:name="LEVEL_KEY"
-            app:argType="string"/>
-        <argument
-            android:name="TASK_NUMBER_KEY"
-            app:argType="integer"/>
-        <argument
-            android:name="TASK_TYPE_KEY"
-            app:argType="string"/>
-    </action>
 
     <fragment
         android:id="@+id/registerFragment"

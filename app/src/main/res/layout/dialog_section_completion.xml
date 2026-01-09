@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="16dp">
+
+    <!-- Контейнер для анимаций салюта (уменьшен в размерах) -->
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="120dp"
+        android:layout_gravity="center"
+        android:layout_marginBottom="-30dp">
+
+        <!-- Звезды салюта с разным положением -->
+        <ImageView
+            android:id="@+id/iv_firework1"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:layout_gravity="center"
+            android:src="@drawable/ic_star_filled"
+            app:tint="#FFEB3B"
+            android:alpha="0"/>
+
+        <ImageView
+            android:id="@+id/iv_firework2"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_gravity="top|start"
+            android:layout_marginTop="30dp"
+            android:layout_marginStart="25dp"
+            android:src="@drawable/ic_star_filled"
+            app:tint="#FF5722"
+            android:alpha="0"/>
+
+        <ImageView
+            android:id="@+id/iv_firework3"
+            android:layout_width="22dp"
+            android:layout_height="22dp"
+            android:layout_gravity="top|end"
+            android:layout_marginTop="25dp"
+            android:layout_marginEnd="25dp"
+            android:src="@drawable/ic_star_filled"
+            app:tint="#4CAF50"
+            android:alpha="0"/>
+
+        <ImageView
+            android:id="@+id/iv_firework4"
+            android:layout_width="18dp"
+            android:layout_height="18dp"
+            android:layout_gravity="bottom|start"
+            android:layout_marginBottom="35dp"
+            android:layout_marginStart="30dp"
+            android:src="@drawable/ic_star_filled"
+            app:tint="#2196F3"
+            android:alpha="0"/>
+
+        <ImageView
+            android:id="@+id/iv_firework5"
+            android:layout_width="21dp"
+            android:layout_height="21dp"
+            android:layout_gravity="bottom|end"
+            android:layout_marginBottom="40dp"
+            android:layout_marginEnd="20dp"
+            android:src="@drawable/ic_star_filled"
+            app:tint="#9C27B0"
+            android:alpha="0"/>
+
+        <ImageView
+            android:id="@+id/iv_firework6"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_gravity="center_horizontal|top"
+            android:layout_marginTop="15dp"
+            android:src="@drawable/ic_star_filled"
+            app:tint="#FF9800"
+            android:alpha="0"/>
+
+    </FrameLayout>
+
+    <!-- Основной контент -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center_horizontal"
+        android:layout_marginTop="60dp">
+
+        <!-- Картинка Чебурашки -->
+
+        <!-- Заголовок -->
+        <ImageView
+            android:id="@+id/iv_cheburashka"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:layout_marginBottom="5dp"
+            android:adjustViewBounds="true"
+            android:scaleType="fitCenter" />
+
+        <TextView
+            android:id="@+id/tv_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Поздравляем!"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:textColor="@color/black"
+            android:layout_marginBottom="8dp"
+            android:gravity="center"/>
+
+        <!-- Сообщение -->
+        <TextView
+            android:id="@+id/tv_message"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Вы молодец!"
+            android:textSize="16sp"
+            android:textColor="@color/black"
+            android:textAlignment="center"
+            android:lineSpacingExtra="4dp"
+            android:layout_marginBottom="24dp"/>
+
+        <!-- Кнопка "Далее" -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_continue"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:text="Далее"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:gravity="center"
+            app:backgroundTint="@color/purple_500"
+            app:icon="@drawable/ic_arrow_forward"
+            app:iconGravity="end"
+            app:iconTint="@android:color/white"
+            style="@style/Widget.Material3.Button"/>
+
+    </LinearLayout>
+
+</FrameLayout>

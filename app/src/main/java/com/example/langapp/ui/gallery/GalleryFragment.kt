@@ -55,6 +55,12 @@ class GalleryFragment : Fragment() {
             grid = binding.gridIntermediate,
             levelName = "intermediate"
         )
+
+        setupLevel(
+            button = binding.btnAdditional,
+            grid = binding.gridAdditional,
+            levelName = "additional"
+        )
     }
 
     private fun setupLevel(button: Button, grid: GridLayout, levelName: String) {
@@ -91,6 +97,7 @@ class GalleryFragment : Fragment() {
             "elementary" -> "Элементарный"
             "basic" -> "Средний"
             "intermediate" -> "Продвинутый"
+            "additional" -> "Дополнительно"
             else -> level
         }
 
@@ -159,10 +166,10 @@ class GalleryFragment : Fragment() {
             putString("LEVEL_KEY", level)
             putInt("TASK_NUMBER_KEY", taskNumber)
             putString("SECTION_NAME_KEY", sectionName)
-            putString("SECTION_ID_KEY", sectionId) // Добавляем ID раздела
+            putString("SECTION_ID_KEY", sectionId)
         }
         findNavController().navigate(
-            R.id.action_gallery_to_vocabulary,
+            R.id.action_nav_gallery_to_vocabularyFragment,
             args
         )
     }
