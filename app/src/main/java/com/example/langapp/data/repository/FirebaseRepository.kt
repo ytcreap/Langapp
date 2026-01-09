@@ -6,6 +6,7 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.example.langapp.data.model.*
+import com.example.langapp.utils.MarkdownParser
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
@@ -153,15 +154,6 @@ class FirebaseRepository {
                 textHint = data["textHint"] as? String,
                 maxAttempts = (data["maxAttempts"] as? Long)?.toInt() ?: 3,
                 image = data["image"] as? String // Добавляем изображение
-            )
-
-            "THEORY" -> TheoryTask(
-                taskname = data["name"] as? String ?: "Задание ${id}",
-                id = id,
-                image = data["image"] as? String ?: "",
-                title = data["title"] as? String ?: "",
-                text = data["text"] as? String ?: "",
-                interactiveElements = emptyList()
             )
 
             "ALPHABET" -> AlphabetTask(
@@ -345,6 +337,35 @@ class FirebaseRepository {
                 )
             }
 
+            "Theory" -> {
+                val markdownContent = data["content"] as? String ?: ""
+                val parsedMarkdown = if (markdownContent.isNotEmpty()) {
+                    com.example.langapp.utils.MarkdownParser.parseMarkdown(markdownContent)
+                } else {
+                    // Для обратной совместимости
+                    val text = data["text"] as? String ?: ""
+                    if (text.isNotEmpty()) {
+                        listOf(MarkdownElement.Paragraph(text))
+                    } else {
+                        emptyList()
+                    }
+                }
+
+                // Парсим интерактивные элементы если есть
+                val interactiveElements = parseInteractiveElements(data["interactiveElements"])
+
+                TheoryTask(
+                    taskname = data["name"] as? String ?: "Задание ${id}",
+                    id = id,
+                    image = data["image"] as? String ?: "",
+                    title = data["title"] as? String ?: "",
+                    text = data["text"] as? String ?: "",
+                    markdownContent = markdownContent,
+                    parsedMarkdown = parsedMarkdown,
+                    interactiveElements = interactiveElements
+                )
+            }
+
             else -> null
         }
     }
@@ -387,6 +408,69 @@ class FirebaseRepository {
         awaitClose {
             reference.removeEventListener(listener)
         }
+    }
+
+    private fun parseInteractiveElements(data: Any?): List<InteractiveElement> {
+        val elements = mutableListOf<InteractiveElement>()
+
+        when (data) {
+            is List<*> -> {
+                data.forEach { element ->
+                    when (element) {
+                        is Map<*, *> -> {
+                            try {
+                                val elementMap = element as Map<String, Any>
+                                val interactiveElement = InteractiveElement(
+                                    type = elementMap["type"] as? String ?: "question",
+                                    content = elementMap["content"] as? String ?: "",
+                                    options = (elementMap["options"] as? List<*>)?.filterIsInstance<String>() ?: emptyList(),
+                                    correctAnswer = elementMap["correctAnswer"] as? String ?: "",
+                                    hint = elementMap["hint"] as? String
+                                )
+                                elements.add(interactiveElement)
+                            } catch (e: Exception) {
+                                e.printStackTrace()
+                            }
+                        }
+                        else -> {
+                            // Попробуем парсить старый формат Question если нужно
+                            try {
+                                val elementMap = element as? Map<String, Any>
+                                elementMap?.let {
+                                    val interactiveElement = InteractiveElement(
+                                        type = "question",
+                                        content = it["question"] as? String ?: "",
+                                        options = (it["options"] as? List<*>)?.filterIsInstance<String>() ?: emptyList(),
+                                        correctAnswer = it["answer"] as? String ?: "",
+                                        hint = it["hint"] as? String
+                                    )
+                                    elements.add(interactiveElement)
+                                }
+                            } catch (e: Exception) {
+                                e.printStackTrace()
+                            }
+                        }
+                    }
+                }
+            }
+            is Map<*, *> -> {
+                // Если это одиночный элемент
+                try {
+                    val elementMap = data as Map<String, Any>
+                    elements.add(InteractiveElement(
+                        type = elementMap["type"] as? String ?: "question",
+                        content = elementMap["content"] as? String ?: "",
+                        options = (elementMap["options"] as? List<*>)?.filterIsInstance<String>() ?: emptyList(),
+                        correctAnswer = elementMap["correctAnswer"] as? String ?: "",
+                        hint = elementMap["hint"] as? String
+                    ))
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }
+        }
+
+        return elements
     }
 }
 

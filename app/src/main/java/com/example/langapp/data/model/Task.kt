@@ -130,18 +130,6 @@ data class TextRecordingTask(
     override val type: String = "TEXT_RECORDING"
 }
 
-// 9. Теория
-@Parcelize
-data class TheoryTask(
-    @get:PropertyName("name") override val taskname: String,
-    @get:PropertyName("id") override val id: String,
-    @get:PropertyName("image") val image: String,
-    @get:PropertyName("title") val title: String,
-    @get:PropertyName("text") val text: String,
-    @get:PropertyName("interactiveElements") val interactiveElements: List<Question> = emptyList()
-) : Task() {
-    override val type: String = "THEORY"
-}
 
 // Устаревшие классы (можно удалить после миграции)
 @Deprecated("Use specific task types instead")
@@ -296,3 +284,55 @@ data class ImageInputSet(
     @get:PropertyName("tasks") val tasks: List<ImageInputTask>,
     @get:PropertyName("type") override val type: String = "IMAGE_INPUT_SET"
 ) : Task()
+
+@Parcelize
+sealed class MarkdownElement : Parcelable {
+    @Parcelize
+    data class Heading(val level: Int, val text: String) : MarkdownElement()
+    @Parcelize
+    data class Paragraph(val text: String) : MarkdownElement()
+    @Parcelize
+    data class Image(val url: String, val altText: String = "") : MarkdownElement()
+    @Parcelize
+    data class ListItem(val text: String, val isOrdered: Boolean = false) : MarkdownElement()
+    @Parcelize
+    data class CodeBlock(val code: String, val language: String = "") : MarkdownElement()
+    @Parcelize
+    data class Blockquote(val text: String) : MarkdownElement()
+    @Parcelize
+    object HorizontalRule : MarkdownElement()
+}
+
+@Parcelize
+data class InteractiveElement(
+    @get:PropertyName("type") val type: String, // "question", "quiz", "example", "task"
+    @get:PropertyName("content") val content: String,
+    @get:PropertyName("options") val options: List<String> = emptyList(),
+    @get:PropertyName("correctAnswer") val correctAnswer: String = "",
+    @get:PropertyName("hint") val hint: String? = null
+) : Parcelable
+
+// Обновляем TheoryTask
+@Parcelize
+data class TheoryTask(
+    @get:PropertyName("name") override val taskname: String,
+    @get:PropertyName("id") override val id: String,
+    @get:PropertyName("image") val image: String = "",
+    @get:PropertyName("title") val title: String = "",
+    @get:PropertyName("text") val text: String = "",
+    @get:PropertyName("content") val markdownContent: String = "", // Новое поле для Markdown
+    val parsedMarkdown: List<MarkdownElement> = emptyList(), // Парсированный Markdown
+    @get:PropertyName("interactiveElements") val interactiveElements: List<InteractiveElement> = emptyList()
+) : Task() {
+    override val type: String = "THEORY"
+
+    val lazyParsedMarkdown: List<MarkdownElement> by lazy {
+        if (markdownContent.isNotEmpty()) {
+            com.example.langapp.utils.MarkdownParser.parseMarkdown(markdownContent)
+        } else if (text.isNotEmpty()) {
+            listOf(MarkdownElement.Paragraph(text))
+        } else {
+            emptyList()
+        }
+    }
+}

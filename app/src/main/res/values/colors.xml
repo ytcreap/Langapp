@@ -60,5 +60,9 @@
     <!--  Белый текст  -->
     <color name="dark_on_surface">#FFE0E0E0</color>
     <!--  Светло-серый текст  -->
+    <color name="code_background">#1E1E1E</color>
+    <color name="code_text">#D4D4D4</color>
+    <color name="quote_background">#F5F5F5</color>
+    <color name="quote_text">#666666</color>
 
 </resources>
