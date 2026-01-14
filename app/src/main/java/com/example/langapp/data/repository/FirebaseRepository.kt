@@ -56,6 +56,37 @@ class FirebaseRepository {
         }
     }
 
+    //
+    fun getAvailableSectionsSingle(level: String, lesson: Int, callback: (List<Section>) -> Unit) {
+        val reference = database.getReference("Lessons/$level/$lesson/sections")
+
+        reference.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val sections = mutableListOf<Section>()
+
+                if (!snapshot.exists()) {
+                    callback(emptyList())
+                    return
+                }
+
+                snapshot.children.forEach { sectionSnapshot ->
+                    val sectionData = sectionSnapshot.value as? Map<String, Any>
+                    sectionData?.let { data ->
+                        val section = createSectionFromData(data, sectionSnapshot.key ?: "")
+                        section?.let { sections.add(it) }
+                    }
+                }
+
+                callback(sections)
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                println("Firebase error: ${error.message}")
+                callback(emptyList())
+            }
+        })
+    }
+
     // Получение задач из конкретного раздела
     fun getTasks(level: String, lesson: Int, sectionId: String): Flow<List<Task>> = callbackFlow {
         val reference = database.getReference("Lessons/$level/$lesson/sections/$sectionId/tasks")

@@ -64,5 +64,8 @@
     <color name="code_text">#D4D4D4</color>
     <color name="quote_background">#F5F5F5</color>
     <color name="quote_text">#666666</color>
+    <color name="message_left_bg">#F0F0F0</color>
+    <color name="message_right_bg">#0088FF</color>
+    <color name="message_highlight">#FF5722</color>
 
 </resources>

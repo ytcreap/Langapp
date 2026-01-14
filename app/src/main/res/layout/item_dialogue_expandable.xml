@@ -20,70 +20,97 @@
         android:clickable="true"
         android:focusable="true">
 
-        <!-- Внутренний контейнер (вся эта область кликабельна) -->
         <LinearLayout
-            android:id="@+id/headerContent"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:padding="16dp"
-            android:background="?attr/selectableItemBackground"
-            android:clickable="true"
-            android:focusable="true">
+            android:orientation="vertical"
+            android:padding="4dp">
 
-            <!-- Иконка стрелки -->
-            <ImageView
-                android:id="@+id/expandIcon"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:layout_marginEnd="12dp"
-                android:src="@drawable/ic_expand_more"
-                android:rotation="0"
-                android:contentDescription="Развернуть"
-                android:clickable="false"
-                android:focusable="false" />
-
-            <!-- Название диалога -->
-            <TextView
-                android:id="@+id/dialogueTitle"
-                android:layout_width="0dp"
+            <!-- Первая строка: название и кнопка Play All -->
+            <LinearLayout
+                android:id="@+id/headerContent"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                android:textColor="@color/black"
-                tools:text="Диалог 1"
-                android:clickable="false"
-                android:focusable="false" />
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:padding="12dp"
+                android:background="?attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true">
 
-            <!-- Индикатор количества реплик -->
-            <TextView
-                android:id="@+id/dialogueCount"
-                android:layout_width="wrap_content"
+                <ImageView
+                    android:id="@+id/expandIcon"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_marginEnd="12dp"
+                    android:src="@drawable/ic_expand_more"
+                    android:rotation="0"
+                    android:contentDescription="Развернуть"
+                    android:clickable="false"
+                    android:focusable="false" />
+
+                <TextView
+                    android:id="@+id/dialogueTitle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/black"
+                    tools:text="Диалог 1"
+                    android:clickable="false"
+                    android:focusable="false" />
+
+                <ImageButton
+                    android:id="@+id/playAllButton"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_marginStart="8dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:src="@drawable/ic_play_all"
+                    android:contentDescription="Воспроизвести весь диалог"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:visibility="gone" />
+
+            </LinearLayout>
+
+            <!-- Вторая строка: количество реплик -->
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="14sp"
-                android:textColor="@color/gray_300"
-                tools:text="4 реплики"
-                android:clickable="false"
-                android:focusable="false" />
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:paddingStart="48dp"
+                android:paddingEnd="12dp"
+                android:paddingBottom="8dp">
+
+                <TextView
+                    android:id="@+id/dialogueCount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="14sp"
+                    android:textColor="@color/gray_300"
+                    tools:text="4 реплики"
+                    android:clickable="false"
+                    android:focusable="false" />
+
+            </LinearLayout>
 
         </LinearLayout>
 
     </androidx.cardview.widget.CardView>
 
-    <!-- Контейнер для реплик (изначально скрыт) -->
+    <!-- Контейнер для реплик -->
     <LinearLayout
         android:id="@+id/repliesContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:visibility="gone"
-        android:paddingStart="24dp"
-        android:paddingEnd="8dp"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
         android:paddingBottom="8dp">
-
-        <!-- Здесь будут добавляться карточки с репликами -->
 
     </LinearLayout>
 

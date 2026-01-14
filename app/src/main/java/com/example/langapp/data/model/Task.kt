@@ -250,19 +250,16 @@ data class VocabularyImageAudioSet(
 ) : Task()
 
 @Parcelize
-data class DialogueLine(
-    @get:PropertyName("sound") val sound: String,
-    @get:PropertyName("text") val text: String
-) : Parcelable
-
-@Parcelize
 data class DialogueTask(
     @get:PropertyName("name") override val taskname: String,
     @get:PropertyName("id") override val id: String,
     @get:PropertyName("question") val question: String = "Послушайте диалог",
     @get:PropertyName("dialogue") val dialogue: List<DialogueLine>,
-    @get:PropertyName("image") val image: String? = null, // Опциональное изображение для диалога
-    @get:PropertyName("autoPlay") val autoPlay: Boolean = true // Автовоспроизведение по порядку
+    @get:PropertyName("image") val image: String? = null,
+    @get:PropertyName("autoPlay") val autoPlay: Boolean = true,
+    @get:PropertyName("showAvatars") val showAvatars: Boolean = true, // Показывать аватары в диалоге
+    @get:PropertyName("leftSpeaker") val leftSpeaker: String = "Собеседник 1", // Имя левого говорящего
+    @get:PropertyName("rightSpeaker") val rightSpeaker: String = "Собеседник 2" // Имя правого говорящего
 ) : Task() {
     override val type: String = "DIALOGUE"
 }
@@ -272,9 +269,22 @@ data class DialogueSet(
     @get:PropertyName("name") override val taskname: String,
     @get:PropertyName("id") override val id: String,
     @get:PropertyName("question") val question: String = "Диалоги для прослушивания",
-    @get:PropertyName("dialogues") val dialogues: Map<String, List<DialogueLine>>, // dialog0, dialog1, etc
-    @get:PropertyName("type") override val type: String = "DIALOGUE_SET"
+    @get:PropertyName("dialogues") val dialogues: Map<String, List<DialogueLine>>,
+    @get:PropertyName("type") override val type: String = "DIALOGUE_SET",
+    @get:PropertyName("defaultLeftSpeaker") val defaultLeftSpeaker: String = "Собеседник 1",
+    @get:PropertyName("defaultRightSpeaker") val defaultRightSpeaker: String = "Собеседник 2"
 ) : Task()
+
+@Parcelize
+data class DialogueLine(
+    @get:PropertyName("sound") val sound: String,
+    @get:PropertyName("text") val text: String,
+    @get:PropertyName("speaker") val speaker: String = "", // Имя говорящего (например, "Анна", "Иван")
+    @get:PropertyName("isLeft") val isLeft: Boolean = true, // Позиция сообщения (true - слева, false - справа)
+    @get:PropertyName("avatar") val avatar: String? = null, // URL аватара говорящего (опционально)
+    @get:PropertyName("timestamp") val timestamp: String? = null // Время сообщения (опционально)
+) : Parcelable {
+}
 
 @Parcelize
 data class ImageInputSet(

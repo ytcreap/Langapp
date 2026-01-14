@@ -15,8 +15,10 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.example.langapp.R
+import com.example.langapp.data.repository.FirebaseRepository
 import com.example.langapp.databinding.FragmentGalleryBinding
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class GalleryFragment : Fragment() {
@@ -101,60 +103,63 @@ class GalleryFragment : Fragment() {
             else -> level
         }
 
-        // Загружаем доступные разделы для этого урока
-        viewModel.loadAvailableSections(level, taskNumber)
-
         // Создаем кастомный layout для диалога
         val dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_task_selector, null)
         val titleText = dialogView.findViewById<TextView>(R.id.dialog_title)
-        val container = dialogView.findViewById<LinearLayout>(R.id.tasks_container)
+        val loadingContainer = dialogView.findViewById<LinearLayout>(R.id.loading_container)
+        val contentContainer = dialogView.findViewById<LinearLayout>(R.id.content_container)
+        val tasksContainer = dialogView.findViewById<LinearLayout>(R.id.tasks_container)
+        val emptyText = dialogView.findViewById<TextView>(R.id.empty_text)
 
         titleText.text = "$levelDisplayName • Урок $taskNumber"
+
+        // Всегда показываем спиннер при открытии
+        loadingContainer.visibility = View.VISIBLE
+        contentContainer.visibility = View.GONE
 
         // Создаем диалог
         val dialog = MaterialAlertDialogBuilder(requireContext())
             .setView(dialogView)
+            .setCancelable(true)
             .create()
 
-        // Наблюдаем за доступными разделами
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.availableSections.collect { sections ->
-                Log.d("GalleryFragment", "Loaded sections: ${sections.map { it.name }}")
+        // Показываем диалог сразу
+        dialog.show()
+
+        // Загружаем данные напрямую с использованием addListenerForSingleValueEvent
+        val repository = FirebaseRepository.getInstance()
+        repository.getAvailableSectionsSingle(level, taskNumber) { sections ->
+            requireActivity().runOnUiThread {
+                // Скрываем спиннер
+                loadingContainer.visibility = View.GONE
+                contentContainer.visibility = View.VISIBLE
 
                 // Очищаем контейнер
-                container.removeAllViews()
+                tasksContainer.removeAllViews()
 
-                // Добавляем кнопки для каждого раздела
-                sections.forEach { section ->
-                    val button = LayoutInflater.from(requireContext()).inflate(R.layout.item_task, container, false)
-                    val taskText = button.findViewById<TextView>(R.id.task_text)
-                    taskText.text = section.name
+                if (sections.isNotEmpty()) {
+                    emptyText.visibility = View.GONE
+                    tasksContainer.visibility = View.VISIBLE
 
-                    // Можно добавить описание, если нужно
-                    // val taskDesc = button.findViewById<TextView>(R.id.task_description)
-                    // taskDesc.text = section.description
+                    // Добавляем кнопки для каждого раздела
+                    sections.forEach { section ->
+                        val button = LayoutInflater.from(requireContext()).inflate(R.layout.item_task, tasksContainer, false)
+                        val taskText = button.findViewById<TextView>(R.id.task_text)
+                        taskText.text = section.name
 
-                    button.setOnClickListener {
-                        dialog.dismiss()
-                        navigateToTask(level, taskNumber, section.id) // Используем section.id для навигации
+                        button.setOnClickListener {
+                            dialog.dismiss()
+                            navigateToTask(level, taskNumber, section.id)
+                        }
+
+                        tasksContainer.addView(button)
                     }
-
-                    container.addView(button)
-                }
-
-                // Если разделов нет, показываем сообщение
-                if (sections.isEmpty()) {
-                    val emptyView = TextView(requireContext()).apply {
-                        text = "Разделы пока не добавлены"
-                        setPadding(50, 50, 50, 50)
-                        textAlignment = TextView.TEXT_ALIGNMENT_CENTER
-                    }
-                    container.addView(emptyView)
+                } else {
+                    emptyText.visibility = View.VISIBLE
+                    tasksContainer.visibility = View.GONE
                 }
             }
         }
-
-        dialog.show()
     }
 
     private fun navigateToTask(level: String, taskNumber: Int, sectionId: String) {

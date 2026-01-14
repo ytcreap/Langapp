@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:padding="0dp"
-    android:background="?attr/colorSurface">
+    android:background="?android:attr/colorBackground">
 
     <TextView
         android:id="@+id/dialog_title"
@@ -12,17 +14,109 @@
         android:layout_height="wrap_content"
         android:textSize="18sp"
         android:textStyle="bold"
-        android:textColor="?attr/colorOnPrimary"
+        android:textColor="@color/white"
         android:gravity="center"
         android:padding="16dp"
         android:background="@drawable/bg_dialog_header"
         android:text="Выберите тип задания"/>
 
-    <LinearLayout
-        android:id="@+id/tasks_container"
+    <!-- State Container -->
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="8dp"/>
+        android:minHeight="200dp">
+
+        <!-- Loading State -->
+        <LinearLayout
+            android:id="@+id/loading_container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:padding="32dp"
+            android:visibility="visible">
+
+            <com.google.android.material.progressindicator.CircularProgressIndicator
+                android:id="@+id/progress_indicator"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:indeterminate="true"
+                app:indicatorColor="@color/dark_primary" />
+
+            <TextView
+                android:id="@+id/loading_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Загрузка..."
+                android:textSize="16sp"
+                android:textColor="@android:color/darker_gray"
+                android:layout_marginTop="16dp" />
+
+        </LinearLayout>
+
+        <!-- Content State -->
+        <LinearLayout
+            android:id="@+id/content_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <!-- Tasks Container -->
+            <LinearLayout
+                android:id="@+id/tasks_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="8dp"/>
+
+            <!-- Empty State -->
+            <TextView
+                android:id="@+id/empty_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Разделы пока не добавлены"
+                android:textSize="16sp"
+                android:textColor="@android:color/darker_gray"
+                android:gravity="center"
+                android:padding="50dp"
+                android:visibility="gone"/>
+        </LinearLayout>
+
+        <!-- Error State -->
+        <LinearLayout
+            android:id="@+id/error_container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:padding="32dp"
+            android:visibility="gone">
+
+            <ImageView
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                android:src="@android:drawable/ic_dialog_alert"
+                app:tint="@color/design_default_color_error"
+                android:contentDescription="Ошибка" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Не удалось загрузить разделы"
+                android:textSize="16sp"
+                android:textColor="@android:color/black"
+                android:layout_marginTop="16dp" />
+
+            <Button
+                android:id="@+id/retry_button"
+                style="?android:attr/buttonStyleSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Повторить"
+                android:layout_marginTop="16dp" />
+
+        </LinearLayout>
+    </FrameLayout>
 
 </LinearLayout>
