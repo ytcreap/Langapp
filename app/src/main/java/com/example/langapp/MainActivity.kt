@@ -1,14 +1,18 @@
+// MainActivity.kt
 package com.example.langapp
 
 import android.content.Context
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.lifecycle.Observer
+import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.NavigationUI
@@ -16,6 +20,7 @@ import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.example.langapp.databinding.ActivityMainBinding
+import com.example.langapp.utils.UserProfileManager
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.material.navigation.NavigationView
@@ -27,6 +32,11 @@ class MainActivity : AppCompatActivity() {
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var binding: ActivityMainBinding
     private lateinit var auth: FirebaseAuth
+    private lateinit var navController: NavController
+
+    // Views для навигационного меню
+    private lateinit var tvUserName: TextView
+    private lateinit var tvUserGroup: TextView
 
     companion object {
         const val PREFS_NAME = "theme_prefs"
@@ -42,6 +52,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         auth = FirebaseAuth.getInstance()
+
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
@@ -49,15 +60,24 @@ class MainActivity : AppCompatActivity() {
 
         val drawerLayout: DrawerLayout = binding.drawerLayout
         val navView: NavigationView = binding.navView
-        val navController = findNavController(R.id.nav_host_fragment_content_main)
+        navController = findNavController(R.id.nav_host_fragment_content_main)
+
+        // Находим Views в заголовке навигационного меню
+        val headerView = navView.getHeaderView(0)
+        tvUserName = headerView.findViewById(R.id.tvUserName)
+        tvUserGroup = headerView.findViewById(R.id.tvUserGroup)
 
         appBarConfiguration = AppBarConfiguration(
             setOf(
                 R.id.nav_home, R.id.nav_gallery, R.id.nav_slideshow, R.id.nav_logout
             ), drawerLayout
         )
+
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
+
+        // Наблюдаем за изменениями данных пользователя
+        setupUserProfileObserver()
 
         // Обработка нажатия кнопки выхода и других пунктов
         navView.setNavigationItemSelectedListener { menuItem ->
@@ -83,14 +103,63 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
+
+        // Запускаем навигацию после настройки всего остального
+        navigateBasedOnAuthState()
+    }
+
+    private fun setupUserProfileObserver() {
+        UserProfileManager.userProfile.observe(this, Observer { profile ->
+            if (profile != null) {
+                tvUserName.text = profile.fullName
+                tvUserGroup.text = profile.group
+            } else {
+                // Пользователь не авторизован
+                tvUserName.text = getString(R.string.full_name_template)
+                tvUserGroup.text = getString(R.string.group_template)
+            }
+        })
     }
 
     override fun onStart() {
         super.onStart()
+        // Вся логика проверки авторизации теперь в navigateBasedOnAuthState()
+        // которая вызывается в onCreate
+    }
+
+    private fun navigateBasedOnAuthState() {
         val currentUser = auth.currentUser
+
         if (currentUser == null) {
-            // Пользователь не вошел в систему, переходим на экран входа
-            findNavController(R.id.nav_host_fragment_content_main).navigate(R.id.nav_log)
+            // Пользователь не вошел в систему - остаемся на loginFragment
+            // Проверяем, что мы не уже на loginFragment
+            val currentDestination = navController.currentDestination?.id
+            if (currentDestination != R.id.nav_log) {
+                navController.navigate(R.id.nav_log)
+            }
+        } else {
+            // Пользователь авторизован - переходим на galleryFragment
+            // Проверяем, что мы не уже на galleryFragment
+            val currentDestination = navController.currentDestination?.id
+            if (currentDestination != R.id.nav_gallery && currentDestination != R.id.nav_home) {
+                navigateToGallery()
+            }
+        }
+    }
+
+    private fun navigateToGallery() {
+        try {
+            // Используем popUpTo чтобы очистить стек навигации
+            navController.navigate(R.id.nav_gallery) {
+                // Очищаем стек навигации до loginFragment
+                popUpTo(R.id.nav_log) {
+                    inclusive = true
+                }
+                launchSingleTop = true
+            }
+        } catch (e: Exception) {
+            // Если произошла ошибка, пробуем простую навигацию
+            navController.navigate(R.id.nav_gallery)
         }
     }
 
@@ -101,8 +170,10 @@ class MainActivity : AppCompatActivity() {
         // Если пользователь вошел через Google, выход из Google Sign-In
         val googleSignInClient = GoogleSignIn.getClient(this, GoogleSignInOptions.DEFAULT_SIGN_IN)
         googleSignInClient.signOut().addOnCompleteListener {
+            // Очищаем данные в меню через менеджер
+            UserProfileManager.clearUserData()
             // Переход на экран входа
-            findNavController(R.id.nav_host_fragment_content_main).navigate(R.id.nav_log)
+            navController.navigate(R.id.nav_log)
         }
     }
 
@@ -132,7 +203,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onSupportNavigateUp(): Boolean {
-        val navController = findNavController(R.id.nav_host_fragment_content_main)
         return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
     }
 

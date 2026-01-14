@@ -15,10 +15,10 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.example.langapp.R
+import com.example.langapp.data.model.Section
 import com.example.langapp.data.repository.FirebaseRepository
 import com.example.langapp.databinding.FragmentGalleryBinding
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class GalleryFragment : Fragment() {
@@ -26,6 +26,9 @@ class GalleryFragment : Fragment() {
     private var _binding: FragmentGalleryBinding? = null
     private val binding get() = _binding!!
     private val viewModel: GalleryViewModel by viewModels()
+
+    private val repository = FirebaseRepository.getInstance()
+    private var currentSections: List<Section> = emptyList()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -127,9 +130,11 @@ class GalleryFragment : Fragment() {
         dialog.show()
 
         // Загружаем данные напрямую с использованием addListenerForSingleValueEvent
-        val repository = FirebaseRepository.getInstance()
         repository.getAvailableSectionsSingle(level, taskNumber) { sections ->
             requireActivity().runOnUiThread {
+                // Сохраняем секции для использования в navigateToTask
+                currentSections = sections
+
                 // Скрываем спиннер
                 loadingContainer.visibility = View.GONE
                 contentContainer.visibility = View.VISIBLE
@@ -149,7 +154,7 @@ class GalleryFragment : Fragment() {
 
                         button.setOnClickListener {
                             dialog.dismiss()
-                            navigateToTask(level, taskNumber, section.id)
+                            navigateToTask(level, taskNumber, section)
                         }
 
                         tasksContainer.addView(button)
@@ -162,17 +167,17 @@ class GalleryFragment : Fragment() {
         }
     }
 
-    private fun navigateToTask(level: String, taskNumber: Int, sectionId: String) {
-        // Нужно также получить название раздела для отображения
-        val section = viewModel.availableSections.value.find { it.id == sectionId }
-        val sectionName = section?.name ?: sectionId
-
+    private fun navigateToTask(level: String, taskNumber: Int, section: Section) {
         val args = Bundle().apply {
             putString("LEVEL_KEY", level)
             putInt("TASK_NUMBER_KEY", taskNumber)
-            putString("SECTION_NAME_KEY", sectionName)
-            putString("SECTION_ID_KEY", sectionId)
+            putString("SECTION_NAME_KEY", section.name)
+            putString("SECTION_ID_KEY", section.id)
         }
+
+        // Загружаем задачи через ViewModel
+        viewModel.loadTasks(level, taskNumber, section.id)
+
         findNavController().navigate(
             R.id.action_nav_gallery_to_vocabularyFragment,
             args

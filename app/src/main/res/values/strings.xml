@@ -13,8 +13,8 @@
     <string name="menu_slideshow">Slideshow</string>
 
     <string name="profile_title">Профиль пользователя</string>
-    <string name="full_name_template">ФИО: Алфёров Никита</string>
-    <string name="group_template">Группа: БПОи-22-04</string>
+    <string name="full_name_template">ФИО: отсутствует</string>
+    <string name="group_template">Группа: отсутствует</string>
     <string name="progress_header">Прогресс выполнения:</string>
     <string name="elementary_progress">Элементарный уровень: %d/15 заданий</string>
     <string name="basic_progress">Базовый уровень: %d/15 заданий</string>
@@ -24,6 +24,14 @@
     <string name="intermediate_level">Средний уровень</string>
     <string name="task_types">Лексика,Фонетика,Грамматика,Тексты,Тест</string>
     <string name="task_format">%1$s (Задание %2$d.%3$d)</string>
+    <string name="user_loading">Загрузка...</string>
+    <string name="user_registered">Зарегистрирован</string>
+    <string name="user_guest">Гость</string>
+    <string name="edit_profile">Редактировать профиль</string>
+    <string name="save_changes">Сохранить изменения</string>
+    <string name="change_email">Изменить email</string>
+    <string name="password_change_hint">Оставьте пустым, если не хотите менять пароль</string>
+    <string name="google_account_note">Для Google-пользователей email и пароль управляются через Google аккаунт</string>
 
 
     <string-array name="russian_alphabet">

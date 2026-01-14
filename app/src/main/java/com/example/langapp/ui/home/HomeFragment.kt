@@ -1,3 +1,4 @@
+// HomeFragment.kt
 package com.example.langapp.ui.home
 
 import android.os.Bundle
@@ -13,9 +14,10 @@ import com.example.langapp.MainActivity
 import com.example.langapp.databinding.FragmentHomeBinding
 import com.example.langapp.R
 import com.google.android.material.progressindicator.LinearProgressIndicator
+import com.google.android.material.snackbar.Snackbar
 
+class HomeFragment : Fragment(), EditProfileDialogFragment.EditProfileListener {
 
-class HomeFragment : Fragment() {
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
     private lateinit var viewModel: HomeViewModel
@@ -31,23 +33,45 @@ class HomeFragment : Fragment() {
         setupObservers()
         setupLogoutButton()
         setupLevelSpinner()
+        setupEditButton()
 
         return binding.root
     }
 
     private fun setupObservers() {
-        viewModel.userData.observe(viewLifecycleOwner) { profile ->
-            binding.tvFullName.text = getString(R.string.full_name_template).replaceAfter(":", " ${profile.fullName}")
-            binding.tvGroup.text = getString(R.string.group_template).replaceAfter(":", " ${profile.group}")
+        // Наблюдаем за данными пользователя
+        viewModel.userProfile.observe(viewLifecycleOwner) { profile ->
+            profile?.let {
+                binding.tvFullName.text = "Имя: ${it.fullName}"
+                binding.tvGroup.text = "Группа: ${it.group}"
+            } ?: run {
+                binding.tvFullName.text = getString(R.string.full_name_template)
+                binding.tvGroup.text = getString(R.string.group_template)
+            }
+        }
 
-            // Обновляем прогресс-бар при загрузке данных
-            updateProgressBar(profile, 0) // Начинаем с Elementary
+        viewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
+            binding.progressBar.isIndeterminate = isLoading
+            binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.VISIBLE
+        }
+
+        viewModel.error.observe(viewLifecycleOwner) { errorMessage ->
+            errorMessage?.let {
+                Snackbar.make(binding.root, it, Snackbar.LENGTH_LONG).show()
+            }
+        }
+
+        viewModel.updateSuccess.observe(viewLifecycleOwner) { success ->
+            if (success) {
+                Snackbar.make(binding.root, "Профиль успешно обновлен", Snackbar.LENGTH_SHORT).show()
+                viewModel.resetUpdateStatus()
+                // Меню обновится автоматически через LiveData
+            }
         }
     }
 
     private fun setupLogoutButton() {
         binding.btnLogout.setOnClickListener {
-            // Реализация выхода
             (requireActivity() as MainActivity).signOut()
         }
     }
@@ -57,58 +81,66 @@ class HomeFragment : Fragment() {
         val progressBar: LinearProgressIndicator = binding.progressBar
         val progressText = binding.progressText
 
-        // Настройка адаптера для Spinner
-        val levels = arrayOf("Элементарный", "Базовый", "Средний")
+        val levels = arrayOf("Элементарный", "Базовый", "Средний", "Дополнительно")
         val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, levels)
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         levelSpinner.adapter = adapter
 
-        // Обработчик выбора уровня
         levelSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                viewModel.userData.value?.let { profile ->
-                    updateProgressBar(profile, position)
-                }
+                updateProgressBar(position)
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {
-                // Скрыть прогресс, если ничего не выбрано
                 progressBar.progress = 0
                 progressText.text = "0/0"
             }
         }
 
-        // Установить начальное значение
         levelSpinner.setSelection(0)
     }
 
-    private fun updateProgressBar(profile: HomeViewModel.UserProfile, levelPosition: Int) {
+    private fun updateProgressBar(levelPosition: Int) {
         val progressBar: LinearProgressIndicator = binding.progressBar
         val progressText = binding.progressText
 
         when (levelPosition) {
-            0 -> { // Elementary
-                //val progress = profile.elementaryProgress
-                val progress = 3 //дебаг строка
-                val max = 15 // Максимальное количество заданий для Elementary
-                progressBar.max = max
-                progressBar.progress = progress
-                progressText.text = "$progress/$max"
-            }
-            1 -> { // Basic
-                val progress = profile.basicProgress
-                val max = 15 // Максимальное количество заданий для Basic
-                progressBar.max = max
-                progressBar.progress = progress
-                progressText.text = "$progress/$max"
-            }
-            2 -> { // Intermediate
-                val progress = profile.intermediateProgress
-                val max = 15 // Максимальное количество заданий для Intermediate
-                progressBar.max = max
-                progressBar.progress = progress
-                progressText.text = "$progress/$max"
-            }
+            0 -> { progressBar.progress = 5; progressBar.max = 15; progressText.text = "5/15" }
+            1 -> { progressBar.progress = 3; progressBar.max = 15; progressText.text = "3/15" }
+            2 -> { progressBar.progress = 2; progressBar.max = 15; progressText.text = "2/15" }
+            3 -> { progressBar.progress = 1; progressBar.max = 15; progressText.text = "1/15" }
         }
+    }
+
+    private fun setupEditButton() {
+        binding.btnEdit.setOnClickListener {
+            showEditProfileDialog()
+        }
+
+        binding.profileCard.setOnLongClickListener {
+            showEditProfileDialog()
+            true
+        }
+    }
+
+    private fun showEditProfileDialog() {
+        val dialog = EditProfileDialogFragment()
+        dialog.setEditProfileListener(this)
+        dialog.show(parentFragmentManager, "edit_profile_dialog")
+    }
+
+    override fun onProfileUpdated() {
+        // Обновляем данные после редактирования профиля
+        viewModel.refresh()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        viewModel.refresh()
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }

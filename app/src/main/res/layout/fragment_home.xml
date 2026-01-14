@@ -58,7 +58,7 @@
                 android:textSize="18sp"
                 android:textStyle="bold"
                 android:layout_marginStart="12dp"
-                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/btnEdit"
                 app:layout_constraintStart_toEndOf="@+id/materialCardView"
                 app:layout_constraintTop_toTopOf="@+id/materialCardView" />
 
@@ -74,6 +74,25 @@
                 app:layout_constraintEnd_toEndOf="@id/tvFullName"
                 app:layout_constraintStart_toEndOf="@+id/materialCardView"
                 app:layout_constraintTop_toBottomOf="@id/tvFullName" />
+
+            <!-- Кнопка редактирования -->
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/btnEdit"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginStart="8dp"
+                android:contentDescription="Редактировать профиль"
+                android:src="@drawable/ic_edit"
+                android:scaleType="center"
+                app:backgroundTint="@color/dark_primary"
+                app:fabCustomSize="40dp"
+                app:maxImageSize="24dp"
+                app:layout_constraintBottom_toBottomOf="@id/tvFullName"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/tvFullName"
+                app:layout_constraintTop_toTopOf="@id/tvFullName"
+                app:layout_constraintVertical_bias="0.0"
+                app:tint="@android:color/white" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>

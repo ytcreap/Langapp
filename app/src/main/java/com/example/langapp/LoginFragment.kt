@@ -65,7 +65,8 @@ class LoginFragment : Fragment() {
         auth.signInWithEmailAndPassword(email, password)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
-                    findNavController().navigate(R.id.action_login_to_home)
+                    // После успешного входа переходим на galleryFragment
+                    navigateToGallery()
                 } else {
                     Toast.makeText(context, "Authentication failed: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
                 }
@@ -107,11 +108,26 @@ class LoginFragment : Fragment() {
         auth.signInWithCredential(credential)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
-                    findNavController().navigate(R.id.action_login_to_home)
+                    // После успешного входа переходим на galleryFragment
+                    navigateToGallery()
                 } else {
                     Toast.makeText(context, "Google authentication failed: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
                 }
             }
+    }
+
+    private fun navigateToGallery() {
+        try {
+            // Переходим на galleryFragment и очищаем стек
+            findNavController().navigate(R.id.nav_gallery) {
+                popUpTo(R.id.nav_log) {
+                    inclusive = true
+                }
+            }
+        } catch (e: Exception) {
+            // Если произошла ошибка, пробуем простую навигацию
+            findNavController().navigate(R.id.nav_gallery)
+        }
     }
 
     companion object {

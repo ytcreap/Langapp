@@ -29,7 +29,9 @@
 
     </com.google.android.material.card.MaterialCardView>
 
+    <!-- Используем понятные id, которые можно найти в коде -->
     <TextView
+        android:id="@+id/tvUserName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/full_name_template"
@@ -39,7 +41,7 @@
         android:textStyle="bold" />
 
     <TextView
-        android:id="@+id/textView"
+        android:id="@+id/tvUserGroup"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/group_template"

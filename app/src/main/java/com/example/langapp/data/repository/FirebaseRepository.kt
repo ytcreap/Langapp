@@ -7,9 +7,13 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.example.langapp.data.model.*
 import com.example.langapp.utils.MarkdownParser
+import com.google.firebase.auth.EmailAuthProvider
+import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.auth.GoogleAuthProvider
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.tasks.await
 
 class FirebaseRepository {
     private val database = FirebaseDatabase.getInstance()
@@ -503,7 +507,189 @@ class FirebaseRepository {
 
         return elements
     }
+
+    fun getUserProfile(userId: String, callback: (UserProfile?) -> Unit) {
+        val reference = database.getReference("Users/$userId")
+
+        reference.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                if (snapshot.exists()) {
+                    try {
+                        val userData = snapshot.value as? Map<String, Any>
+                        val profile = createUserProfileFromData(userId, userData ?: emptyMap())
+                        callback(profile)
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                        callback(null)
+                    }
+                } else {
+                    callback(null)
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                println("Firebase error loading user profile: ${error.message}")
+                callback(null)
+            }
+        })
+    }
+
+    // Получение прогресса пользователя
+    fun getUserProgress(userId: String, level: String, callback: (Int) -> Unit) {
+        // Здесь нужно определить структуру хранения прогресса
+        // Предположим, что прогресс хранится в "UserProgress/$userId/$level"
+        val reference = database.getReference("UserProgress/$userId/$level")
+
+        reference.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val progress = snapshot.getValue(Int::class.java) ?: 0
+                callback(progress)
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                println("Firebase error loading progress: ${error.message}")
+                callback(0)
+            }
+        })
+    }
+
+    // Получение текущего аутентифицированного пользователя
+    fun getCurrentUser(): FirebaseUser? {
+        return auth.currentUser
+    }
+
+    // Получение UID текущего пользователя
+    fun getCurrentUserId(): String? {
+        return auth.currentUser?.uid
+    }
+
+    // Создание UserProfile из данных Firebase
+    private fun createUserProfileFromData(userId: String, data: Map<String, Any>): UserProfile {
+        return UserProfile(
+            userId = userId,
+            fullName = data["fullName"] as? String ?:
+            ((data["firstName"] as? String ?: "") + " " + (data["lastName"] as? String ?: "")).trim(),
+            group = data["group"] as? String ?: "Не указана",
+            email = data["email"] as? String ?: "",
+            // Прогресс будем загружать отдельно
+            elementaryProgress = 0,
+            basicProgress = 0,
+            intermediateProgress = 0,
+            additionalProgress = 0
+        )
+    }
+
+    fun loadCurrentUserProfile(callback: (UserProfile?) -> Unit) {
+        val currentUser = getCurrentUser()
+        if (currentUser == null) {
+            callback(null)
+            return
+        }
+
+        getUserProfile(currentUser.uid) { profile ->
+            callback(profile)
+        }
+    }
+    /**
+     * Обновляет профиль пользователя в базе данных
+     */
+    fun updateUserProfile(userId: String, fullName: String, group: String, callback: (Boolean, String?) -> Unit) {
+        val updates = HashMap<String, Any>()
+        updates["fullName"] = fullName
+        updates["group"] = group
+
+        database.getReference("Users/$userId")
+            .updateChildren(updates)
+            .addOnSuccessListener {
+                callback(true, null)
+            }
+            .addOnFailureListener { e ->
+                callback(false, e.message)
+            }
+    }
+
+    /**
+     * Создает профиль пользователя если его нет
+     */
+    fun createUserProfileIfNeeded(userId: String, email: String, fullName: String? = null, group: String? = null) {
+        val userRef = database.getReference("Users/$userId")
+
+        userRef.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                if (!snapshot.exists()) {
+                    // Создаем профиль если его нет
+                    val profileData = HashMap<String, Any>()
+                    profileData["email"] = email
+                    profileData["fullName"] = fullName ?: email.split("@").first()
+                    profileData["group"] = group ?: "Не указана"
+
+                    userRef.setValue(profileData)
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                println("Error checking user profile: ${error.message}")
+            }
+        })
+    }
+
+    /**
+     * Проверяет, является ли пользователь зарегистрированным через Google
+     */
+    fun isGoogleUser(): Boolean {
+        val currentUser = auth.currentUser
+        return currentUser?.let { user ->
+            user.providerData.any { it.providerId == GoogleAuthProvider.PROVIDER_ID }
+        } ?: false
+    }
+
+    /**
+     * Обновляет email пользователя
+     */
+    suspend fun updateUserEmail(currentEmail: String, newEmail: String, password: String): Boolean {
+        return try {
+            // Переаутентификация пользователя
+            val credential = EmailAuthProvider.getCredential(currentEmail, password)
+            auth.currentUser?.reauthenticate(credential)?.await()
+
+            // Обновление email
+            auth.currentUser?.updateEmail(newEmail)?.await()
+            true
+        } catch (e: Exception) {
+            e.printStackTrace()
+            false
+        }
+    }
+
+    /**
+     * Обновляет пароль пользователя
+     */
+    suspend fun updateUserPassword(currentEmail: String, currentPassword: String, newPassword: String): Boolean {
+        return try {
+            // Переаутентификация пользователя
+            val credential = EmailAuthProvider.getCredential(currentEmail, currentPassword)
+            auth.currentUser?.reauthenticate(credential)?.await()
+
+            // Обновление пароля
+            auth.currentUser?.updatePassword(newPassword)?.await()
+            true
+        } catch (e: Exception) {
+            e.printStackTrace()
+            false
+        }
+    }
 }
+
+data class UserProfile(
+    val userId: String,
+    val fullName: String,
+    val group: String,
+    val email: String,
+    val elementaryProgress: Int,
+    val basicProgress: Int,
+    val intermediateProgress: Int,
+    val additionalProgress: Int
+)
 
 private fun createImageAudioTask(data: Map<String, Any>, id: String): ImageAudioTask? {
     return try {
