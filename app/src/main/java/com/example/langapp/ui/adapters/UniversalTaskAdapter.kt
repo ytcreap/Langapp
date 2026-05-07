@@ -9,10 +9,12 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.langapp.R
 import com.example.langapp.data.model.*
 import com.example.langapp.ui.holders.*
+import java.io.File
 
 class UniversalTaskAdapter(
     private val items: List<Task>,
-    private val onItemClick: (Task) -> Unit = {}
+    private val onItemClick: (Task) -> Unit = {},
+    private val onRecordingReady: (Task, File) -> Unit = { _, _ -> }
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     override fun getItemViewType(position: Int): Int {
@@ -29,6 +31,8 @@ class UniversalTaskAdapter(
             is TaskSet -> VIEW_TYPE_TASK_SET
             is TextInputSet -> VIEW_TYPE_TEXT_INPUT_SET
             is AudioRecordingSet -> VIEW_TYPE_AUDIO_RECORDING_SET
+            is ImageRecordingSet -> VIEW_TYPE_IMAGE_RECORDING_SET
+            is TextRecordingSet -> VIEW_TYPE_TEXT_RECORDING_SET
             is AlphabetTask -> VIEW_TYPE_ALPHABET
             is SyllableTask -> VIEW_TYPE_SYLLABLE
             is MultipleChoiceSet -> VIEW_TYPE_MULTIPLE_CHOICE_SET
@@ -55,6 +59,8 @@ class UniversalTaskAdapter(
             VIEW_TYPE_TASK_SET -> TaskSetHolder(inflater.inflate(R.layout.holder_task_set, parent, false))
             VIEW_TYPE_TEXT_INPUT_SET -> TextInputSetHolder(inflater.inflate(R.layout.holder_text_input_set, parent, false))
             VIEW_TYPE_AUDIO_RECORDING_SET -> AudioRecordingSetHolder(inflater.inflate(R.layout.holder_audio_recording_set, parent, false))
+            VIEW_TYPE_IMAGE_RECORDING_SET -> RecordingSetHolder(inflater.inflate(R.layout.holder_audio_recording_set, parent, false))
+            VIEW_TYPE_TEXT_RECORDING_SET -> RecordingSetHolder(inflater.inflate(R.layout.holder_audio_recording_set, parent, false))
             VIEW_TYPE_ALPHABET -> AlphabetHolder(inflater.inflate(R.layout.holder_alphabet, parent, false))
             VIEW_TYPE_SYLLABLE -> SyllableHolder(inflater.inflate(R.layout.holder_syllable, parent, false))
             VIEW_TYPE_MULTIPLE_CHOICE_SET -> MultipleChoiceSetHolder(inflater.inflate(R.layout.holder_multiple_choice_set, parent, false))
@@ -74,13 +80,14 @@ class UniversalTaskAdapter(
             is TextInputHolder -> holder.bind(item as TextInputTask)
             is AudioInputHolder -> holder.bind(item as AudioInputTask, onItemClick)
             is ImageAudioHolder -> holder.bind(item as ImageAudioTask, onItemClick)
-            is ImageRecordingHolder -> holder.bind(item as ImageRecordingTask, onItemClick)
-            is AudioRecordingHolder -> holder.bind(item as AudioRecordingTask, onItemClick)
-            is TextRecordingHolder -> holder.bind(item as TextRecordingTask, onItemClick)
+            is ImageRecordingHolder -> holder.bind(item as ImageRecordingTask, onItemClick, onRecordingReady)
+            is AudioRecordingHolder -> holder.bind(item as AudioRecordingTask, onItemClick, onRecordingReady)
+            is TextRecordingHolder -> holder.bind(item as TextRecordingTask, onItemClick, onRecordingReady)
             is TheoryHolder -> holder.bind(item as TheoryTask, onItemClick)
             is TaskSetHolder -> holder.bind(item as TaskSet, onItemClick)
             is TextInputSetHolder -> holder.bind(item as TextInputSet, onItemClick)
-            is AudioRecordingSetHolder -> holder.bind(item as AudioRecordingSet, onItemClick)
+            is AudioRecordingSetHolder -> holder.bind(item as AudioRecordingSet, onItemClick, onRecordingReady)
+            is RecordingSetHolder -> holder.bind(item, onItemClick, onRecordingReady)
             is AlphabetHolder -> holder.bind(item as AlphabetTask)
             is SyllableHolder -> holder.bind(item as SyllableTask)
             is MultipleChoiceSetHolder -> holder.bind(item as MultipleChoiceSet, onItemClick)
@@ -113,5 +120,7 @@ class UniversalTaskAdapter(
         const val VIEW_TYPE_DIALOGUE = 17
         const val VIEW_TYPE_DIALOGUE_SET = 18
         const val VIEW_TYPE_IMAGE_INPUT_SET = 19 // Новый тип
+        const val VIEW_TYPE_IMAGE_RECORDING_SET = 20
+        const val VIEW_TYPE_TEXT_RECORDING_SET = 21
     }
 }

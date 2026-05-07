@@ -1,0 +1,19 @@
+{
+  "name": "langapp-api",
+  "version": "1.0.0",
+  "description": "HTTP API for LangApp data previously served from Firebase Realtime Database.",
+  "main": "src/server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js",
+    "check": "node --check src/server.js",
+    "mongo:import": "node scripts/import-json-to-mongo.js"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "optionalDependencies": {
+    "mongodb": "^6.16.0"
+  }
+}

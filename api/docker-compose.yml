@@ -1,0 +1,22 @@
+services:
+  langapp-api:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      DATA_SOURCE: json
+      JSON_DB_PATH: "./languageguidev2-default-rtdb-export (1).json"
+      CORS_ORIGIN: "*"
+    volumes:
+      - "./languageguidev2-default-rtdb-export (1).json:/app/languageguidev2-default-rtdb-export (1).json"
+
+  mongo:
+    image: mongo:7
+    profiles: ["mongo"]
+    ports:
+      - "27017:27017"
+    volumes:
+      - "mongo-data:/data/db"
+
+volumes:
+  mongo-data:

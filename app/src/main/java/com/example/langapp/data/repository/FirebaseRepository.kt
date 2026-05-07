@@ -10,18 +10,250 @@ import com.example.langapp.utils.MarkdownParser
 import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.withContext
+import org.json.JSONArray
+import org.json.JSONObject
+import java.net.HttpURLConnection
+import java.net.URL
+import java.net.URLEncoder
 
 class FirebaseRepository {
     private val database = FirebaseDatabase.getInstance()
     private val auth = FirebaseAuth.getInstance()
+    private val apiScope = CoroutineScope(Dispatchers.IO)
+    private var apiBaseUrl = "http://10.0.2.2:3000/api"
 
     companion object {
         private val _instance: FirebaseRepository by lazy { FirebaseRepository() }
         fun getInstance(): FirebaseRepository = _instance
+    }
+
+    fun configureApiBaseUrl(baseUrl: String) {
+        apiBaseUrl = baseUrl.trimEnd('/')
+    }
+
+    fun getAvailableSectionsFromApi(level: String, lesson: Int): Flow<List<Section>> = flow {
+        emit(fetchAvailableSectionsFromApi(level, lesson))
+    }
+
+    fun getAvailableSectionsSingleFromApi(level: String, lesson: Int, callback: (List<Section>) -> Unit) {
+        apiScope.launch {
+            val sections = try {
+                fetchAvailableSectionsFromApi(level, lesson)
+            } catch (e: Exception) {
+                e.printStackTrace()
+                emptyList()
+            }
+            withContext(Dispatchers.Main) {
+                callback(sections)
+            }
+        }
+    }
+
+    fun getTasksFromApi(level: String, lesson: Int, sectionId: String): Flow<List<Task>> = flow {
+        emit(fetchTasksFromApi(level, lesson, sectionId))
+    }
+
+    fun checkIfLessonExistsFromApi(level: String, lesson: Int, callback: (Boolean) -> Unit) {
+        apiScope.launch {
+            val exists = try {
+                val response = apiGet("lessons/${encodePath(level)}/$lesson/exists") as? Map<*, *>
+                response?.get("exists") as? Boolean ?: false
+            } catch (e: Exception) {
+                e.printStackTrace()
+                false
+            }
+            withContext(Dispatchers.Main) {
+                callback(exists)
+            }
+        }
+    }
+
+    fun getFirstSectionOfLessonFromApi(level: String, lesson: Int): Flow<Section?> = flow {
+        val response = apiGet("lessons/${encodePath(level)}/$lesson/sections/first")
+        emit(parseSectionFromApi(response))
+    }
+
+    fun getUserProfileFromApi(userId: String, callback: (UserProfile?) -> Unit) {
+        apiScope.launch {
+            val profile = try {
+                val response = apiGet("users/${encodePath(userId)}") as? Map<String, Any>
+                response?.let { createUserProfileFromData(userId, it) }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                null
+            }
+            withContext(Dispatchers.Main) {
+                callback(profile)
+            }
+        }
+    }
+
+    fun getUserProgressFromApi(userId: String, level: String, callback: (Int) -> Unit) {
+        apiScope.launch {
+            val progress = try {
+                val response = apiGet("users/${encodePath(userId)}/progress/${encodePath(level)}") as? Map<*, *>
+                (response?.get("progress") as? Number)?.toInt() ?: 0
+            } catch (e: Exception) {
+                e.printStackTrace()
+                0
+            }
+            withContext(Dispatchers.Main) {
+                callback(progress)
+            }
+        }
+    }
+
+    fun updateUserProfileViaApi(userId: String, fullName: String, group: String, callback: (Boolean, String?) -> Unit) {
+        apiScope.launch {
+            val result = try {
+                val body = JSONObject()
+                    .put("fullName", fullName)
+                    .put("group", group)
+                    .toString()
+                apiRequest("PATCH", "users/${encodePath(userId)}", body)
+                true to null
+            } catch (e: Exception) {
+                e.printStackTrace()
+                false to e.message
+            }
+            withContext(Dispatchers.Main) {
+                callback(result.first, result.second)
+            }
+        }
+    }
+
+    fun createUserProfileViaApiIfNeeded(userId: String, email: String, fullName: String? = null, group: String? = null) {
+        apiScope.launch {
+            try {
+                val body = JSONObject()
+                    .put("email", email)
+                    .put("fullName", fullName)
+                    .put("group", group)
+                    .toString()
+                apiRequest("POST", "users/${encodePath(userId)}/ensure", body)
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
+
+    private suspend fun fetchAvailableSectionsFromApi(level: String, lesson: Int): List<Section> {
+        val response = apiGet("lessons/${encodePath(level)}/$lesson/sections") as? List<*> ?: return emptyList()
+        return response.mapNotNull { parseSectionFromApi(it) }
+    }
+
+    private suspend fun fetchTasksFromApi(level: String, lesson: Int, sectionId: String): List<Task> {
+        val response = apiGet("lessons/${encodePath(level)}/$lesson/sections/${encodePath(sectionId)}/tasks") as? List<*> ?: return emptyList()
+        return response.mapNotNull { taskData ->
+            val data = taskData as? Map<String, Any> ?: return@mapNotNull null
+            val id = data["id"] as? String ?: return@mapNotNull null
+            createTaskFromData(data, id)
+        }
+    }
+
+    private fun parseSectionFromApi(value: Any?): Section? {
+        val data = value as? Map<String, Any> ?: return null
+        val id = data["id"] as? String ?: return null
+        return createSectionFromData(data, id)
+    }
+
+    private suspend fun apiGet(path: String): Any? {
+        return apiRequest("GET", path)
+    }
+
+    private suspend fun apiRequest(method: String, path: String, body: String? = null): Any? = withContext(Dispatchers.IO) {
+        val url = URL("${apiBaseUrl.trimEnd('/')}/${path.trimStart('/')}")
+        val connection = (url.openConnection() as HttpURLConnection).apply {
+            requestMethod = method
+            connectTimeout = 10_000
+            readTimeout = 15_000
+            setRequestProperty("Accept", "application/json")
+            if (body != null) {
+                doOutput = true
+                setRequestProperty("Content-Type", "application/json; charset=utf-8")
+            }
+        }
+
+        try {
+            if (body != null) {
+                connection.outputStream.use { output ->
+                    output.write(body.toByteArray(Charsets.UTF_8))
+                }
+            }
+
+            val status = connection.responseCode
+            val stream = if (status in 200..299) connection.inputStream else connection.errorStream
+            val text = stream?.bufferedReader(Charsets.UTF_8)?.use { it.readText() }.orEmpty()
+
+            if (status !in 200..299) {
+                throw IllegalStateException("API request failed with HTTP $status: $text")
+            }
+
+            parseJsonResponse(text)
+        } finally {
+            connection.disconnect()
+        }
+    }
+
+    private fun parseJsonResponse(text: String): Any? {
+        val trimmed = text.trim()
+        if (trimmed.isEmpty() || trimmed == "null") {
+            return null
+        }
+
+        return when (trimmed.first()) {
+            '[' -> jsonArrayToList(JSONArray(trimmed))
+            '{' -> jsonObjectToMap(JSONObject(trimmed))
+            else -> trimmed
+        }
+    }
+
+    private fun jsonObjectToMap(json: JSONObject): Map<String, Any> {
+        val map = LinkedHashMap<String, Any>()
+        val keys = json.keys()
+        while (keys.hasNext()) {
+            val key = keys.next()
+            jsonToValue(json.get(key))?.let { value ->
+                map[key] = value
+            }
+        }
+        return map
+    }
+
+    private fun jsonArrayToList(json: JSONArray): List<Any> {
+        val list = ArrayList<Any>()
+        for (index in 0 until json.length()) {
+            jsonToValue(json.get(index))?.let { value ->
+                list.add(value)
+            }
+        }
+        return list
+    }
+
+    private fun jsonToValue(value: Any?): Any? {
+        return when (value) {
+            null, JSONObject.NULL -> null
+            is JSONObject -> jsonObjectToMap(value)
+            is JSONArray -> jsonArrayToList(value)
+            is Int -> value.toLong()
+            is Long -> value
+            is Double -> if (value % 1.0 == 0.0) value.toLong() else value
+            is Float -> if (value % 1.0f == 0.0f) value.toLong() else value.toDouble()
+            else -> value
+        }
+    }
+
+    private fun encodePath(value: String): String {
+        return URLEncoder.encode(value, "UTF-8").replace("+", "%20")
     }
 
     // Получение всех доступных разделов для урока
@@ -191,6 +423,15 @@ class FirebaseRepository {
                 image = data["image"] as? String // Добавляем изображение
             )
 
+            "IMAGE_RECORDING" -> ImageRecordingTask(
+                taskname = data["name"] as? String ?: "Recording task ${id}",
+                id = id,
+                image = data["image"] as? String ?: "",
+                targetText = data["targetText"] as? String ?: (data["textHint"] as? String ?: ""),
+                referenceAudio = data["referenceAudio"] as? String,
+                similarityThreshold = (data["similarityThreshold"] as? Number)?.toFloat() ?: 0.7f
+            )
+
             "ALPHABET" -> AlphabetTask(
                 taskname = data["name"] as? String ?: "Задание ${id}",
                 id = id,
@@ -250,6 +491,30 @@ class FirebaseRepository {
                     taskname = data["name"] as? String ?: "Задание ${id}",
                     id = id,
                     tasks = audioTasks
+                )
+            }
+
+            "IMAGE_RECORDING_SET" -> {
+                val tasksData = data["tasks"] as? Map<String, Map<String, Any>> ?: emptyMap()
+                val imageRecordingTasks = tasksData.mapNotNull { (taskId, taskData) ->
+                    createTaskFromData(taskData + ("type" to "IMAGE_RECORDING"), taskId) as? ImageRecordingTask
+                }
+                ImageRecordingSet(
+                    taskname = data["name"] as? String ?: "Recording set ${id}",
+                    id = id,
+                    tasks = imageRecordingTasks
+                )
+            }
+
+            "TEXT_RECORDING_SET" -> {
+                val tasksData = data["tasks"] as? Map<String, Map<String, Any>> ?: emptyMap()
+                val textRecordingTasks = tasksData.mapNotNull { (taskId, taskData) ->
+                    createTaskFromData(taskData + ("type" to "TEXT_RECORDING"), taskId) as? TextRecordingTask
+                }
+                TextRecordingSet(
+                    taskname = data["name"] as? String ?: "Recording set ${id}",
+                    id = id,
+                    tasks = textRecordingTasks
                 )
             }
 

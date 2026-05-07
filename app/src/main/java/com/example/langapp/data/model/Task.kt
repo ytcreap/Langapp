@@ -174,6 +174,22 @@ data class AudioRecordingSet(
 ) : Task()
 
 @Parcelize
+data class ImageRecordingSet(
+    @get:PropertyName("name") override val taskname: String,
+    @get:PropertyName("id") override val id: String,
+    @get:PropertyName("tasks") val tasks: List<ImageRecordingTask>,
+    @get:PropertyName("type") override val type: String = "IMAGE_RECORDING_SET"
+) : Task()
+
+@Parcelize
+data class TextRecordingSet(
+    @get:PropertyName("name") override val taskname: String,
+    @get:PropertyName("id") override val id: String,
+    @get:PropertyName("tasks") val tasks: List<TextRecordingTask>,
+    @get:PropertyName("type") override val type: String = "TEXT_RECORDING_SET"
+) : Task()
+
+@Parcelize
 data class AlphabetLetter(
     @get:PropertyName("image") val image: String,
     @get:PropertyName("sound") val sound: String,

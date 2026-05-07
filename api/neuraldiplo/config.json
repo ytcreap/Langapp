@@ -1,0 +1,8 @@
+{
+    "sample_rate": 16000,
+    "n_mels": 128,
+    "max_audio_len": 120000,
+    "max_pad_length": 350,
+    "num_accents": 5,
+    "alphabet": " абвгдеёжзийклмнопрстуфхцчшщъыьэюя"
+}
